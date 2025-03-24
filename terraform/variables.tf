@@ -13,11 +13,6 @@ variable "account" {
   type        = string
 }
 
-variable "cloud_provider" {
-  description = "The cloud provider where the Snowflake account is hosted"
-  type        = string
-}
-
 variable "snowflake_user" {
   description = "The Snowflake user to authenticate with"
   type        = string
