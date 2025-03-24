@@ -51,7 +51,7 @@ jobs:
         continue-on-error: true
         id: plan
         run: |
-          terraform plan --var-file="vars/${{ inputs.env }}.tfvars"
+          terraform plan --var-file="terraform/vars/${{ inputs.env }}.tfvars"
 
 
       - name: "Post Plan to PR"

@@ -38,4 +38,4 @@ jobs:
       - name: Terraform Apply
         id: apply
         run: |
-          terraform apply --var-file="vars/${{ inputs.env }}.tfvars" -auto-approve
+          terraform apply --var-file="terraform/vars/${{ inputs.env }}.tfvars" -auto-approve
