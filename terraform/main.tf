@@ -16,12 +16,10 @@ terraform {
 }
 
 provider "snowflake" {
-  account_name = "ne36888"
-  region       = "ap-southeast-2"
+  account_name      = "UV98843"
+  organization_name = "QMUGLJO"  # ← update with your actual Snowflake org name
 
   username = var.snowflake_user
   password = var.snowflake_password
   role     = var.snowflake_role
 }
-
-
