@@ -3,16 +3,6 @@ variable "database" {
   type        = string
 }
 
-variable "region" {
-  description = "The region where the Snowflake account is located"
-  type        = string
-}
-
-variable "account" {
-  description = "The Snowflake account name"
-  type        = string
-}
-
 variable "snowflake_user" {
   description = "The Snowflake user to authenticate with"
   type        = string

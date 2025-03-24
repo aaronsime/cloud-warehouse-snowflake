@@ -16,11 +16,12 @@ terraform {
 }
 
 provider "snowflake" {
-  account_name = var.account
-  region       = var.region
+  account_name = "ne36888"
+  region       = "ap-southeast-2"
 
   username = var.snowflake_user
   password = var.snowflake_password
   role     = var.snowflake_role
 }
+
 
