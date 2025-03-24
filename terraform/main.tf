@@ -16,8 +16,8 @@ terraform {
 }
 
 provider "snowflake" {
-  account_name      = "UV98843"
-  organization_name = "QMUGLJO"
+  account_name      = "ne36888"
+  organization_name = "qmugljo"
 
   user     = var.snowflake_user
   password = var.snowflake_password
