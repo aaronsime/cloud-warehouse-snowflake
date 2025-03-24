@@ -17,9 +17,9 @@ terraform {
 
 provider "snowflake" {
   account_name      = "UV98843"
-  organization_name = "QMUGLJO"  # ← update with your actual Snowflake org name
+  organization_name = "QMUGLJO"
 
-  username = var.snowflake_user
+  user     = var.snowflake_user
   password = var.snowflake_password
   role     = var.snowflake_role
 }
