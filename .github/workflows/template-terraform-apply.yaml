@@ -32,10 +32,12 @@ jobs:
           cli_config_credentials_token: ${{ secrets.tf-api-token }}
 
       - name: Terraform Init
+        working-directory: terraform
         id: init
         run: terraform init
 
       - name: Terraform Apply
+        working-directory: terraform
         id: apply
         run: |
           terraform apply --var-file="terraform/vars/${{ inputs.env }}.tfvars" -auto-approve
