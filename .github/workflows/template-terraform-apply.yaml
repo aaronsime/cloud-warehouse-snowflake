@@ -1,0 +1,41 @@
+name: "Terraform Apply Template"
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      workspace-name:
+        required: true
+        type: string
+    secrets:
+      tf-api-token:
+        required: true
+jobs:
+  terraform-apply:
+    name: ${{ inputs.env }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set Terraform ${{ inputs.env }} Workspace
+        run: sed -i 's/$TF_WORKSPACE/${{ inputs.workspace-name }}/' main.tf
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          cli_config_credentials_token: ${{ secrets.tf-api-token }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Apply
+        id: apply
+        run: |
+          terraform apply --var-file="vars/${{ inputs.env }}.tfvars" -auto-approve
