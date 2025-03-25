@@ -14,7 +14,7 @@ resource "snowflake_stage" "raw_stage" {
 
   url                 = var.gcp_bucket
   storage_integration = "GCS_INT"
-  file_format         = snowflake_file_format.csv_format.name
+  file_format         = CSV_FORMAT
 
   comment = "Stage for raw olist incoming data"
 }
