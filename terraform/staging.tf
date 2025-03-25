@@ -1,11 +1,9 @@
 resource "snowflake_file_format" "csv_format" {
-  name      = "CSV_FORMAT"
-  database  = var.database
-  schema    = "RAW"
-  format_type = "CSV"
-
-  field_delimiter = ","
-  skip_header     = 1
+  name         = "CSV_FORMAT"
+  database     = "DEV_CLOUD_DATAWAREHOUSE"
+  schema       = "RAW"
+  format_type  = "CSV"
+  skip_header  = 1
   field_optionally_enclosed_by = "\""
 }
 
