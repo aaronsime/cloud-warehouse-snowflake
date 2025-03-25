@@ -8,6 +8,7 @@ resource "snowflake_file_format" "csv_format" {
 }
 
 resource "snowflake_stage" "raw_stage" {
+  depends_on = [snowflake_file_format_grant.csv_usage_grant]
   name      = "RAW_STAGE"
   database  = var.database
   schema    = "RAW"
