@@ -23,3 +23,13 @@ variable "gcp_bucket" {
   description = "The GCP bucket to use for staging"
   type        = string
 }
+
+variable "account_name" {
+  description = "The Snowflake account name"
+  type        = string
+}
+
+variable "organization_name" {
+  description = "The Snowflake organization name"
+  type        = string
+}

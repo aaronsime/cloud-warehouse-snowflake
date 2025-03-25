@@ -1,0 +1,110 @@
+name: "Deploy Cloud Function"
+
+on:
+  workflow_call:
+    inputs:
+      function_name:
+        required: true
+        type: string
+      source_path:
+        required: true
+        type: string
+      entry_point:
+        required: true
+        type: string
+      trigger_topic:
+        required: true
+        type: string
+      region:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
+      service_account:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+      memory:
+        required: true
+        type: string
+      cpu:
+        required: true
+        type: string
+      timeout:
+        required: true
+        type: string
+      environment_variables:
+        required: true
+        type: string
+      secret_environment_variables:
+        required: true
+        type: string
+    secrets:
+        gcp-credentials:
+            required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Set Up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
+
+
+    - name: Prepare Cloud Function
+      run: |
+        mkdir -p build/${{ inputs.function_name }}
+        cp -R ${{ inputs.source_path }}/* build/${{ inputs.function_name }}/
+        cp -R config build/${{ inputs.function_name }}
+        cp -R utils build/${{ inputs.function_name }}
+
+    - name: Zip Cloud Function
+      run: |
+        cd build
+        zip -r ${{ inputs.function_name }}.zip ${{ inputs.function_name }}
+
+    - name: Install gcloud CLI
+      run: |
+        sudo apt-get install -y apt-transport-https ca-certificates gnupg
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
+        sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+
+    - name: Authenticate to Google Cloud
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.gcp-credentials }}
+      run: |
+        echo "${GOOGLE_APPLICATION_CREDENTIALS}" > ${{ github.workspace }}/key.json
+        gcloud auth activate-service-account --key-file=${{ github.workspace }}/key.json
+        gcloud config set project ${{ inputs.project }}
+
+    - name: Deploy Cloud Function
+      run: |
+        deploy_command="gcloud functions deploy ${{ inputs.function_name }} \
+          --runtime python39 \
+          --trigger-topic ${{ inputs.trigger_topic }} \
+          --source build/${{ inputs.function_name }} \
+          --entry-point ${{ inputs.entry_point }} \
+          --region ${{ inputs.region }} \
+          --memory ${{ inputs.memory }} \
+          --cpu ${{ inputs.cpu }} \
+          --timeout ${{ inputs.timeout }} \
+          --service-account ${{ inputs.service_account }} \
+          --project ${{ inputs.project }} \
+          --set-env-vars ${{ inputs.environment_variables }} \
+          --set-secrets ${{ inputs.secret_environment_variables }} \
+          --no-allow-unauthenticated \
+          --no-gen2"
+
+        echo "Running command: $deploy_command"
+        eval $deploy_command
