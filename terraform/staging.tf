@@ -21,6 +21,10 @@ resource "snowflake_storage_integration" "gcs_integration" {
 
 
 resource "snowflake_stage" "raw_stage" {
+  depends_on = [
+    snowflake_file_format.csv_format,
+    snowflake_storage_integration.gcs_integration
+  ]
   name      = "RAW_STAGE"
   database  = var.database
   schema    = "RAW"
