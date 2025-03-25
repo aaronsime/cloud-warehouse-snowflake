@@ -1,7 +1,11 @@
-resource "snowflake_file_format_grant" "csv_usage_grant" {
-  database_name     = snowflake_file_format.csv_format.database
-  schema_name       = snowflake_file_format.csv_format.schema
-  file_format_name  = snowflake_file_format.csv_format.name
-  privilege         = "USAGE"
-  roles             = ["TERRAFORM_ROLE"]
+resource "snowflake_grant_privileges" "csv_file_format_usage" {
+  privileges     = ["USAGE"]
+  on {
+    object_type = "FILE FORMAT"
+    object_name = "\"DEV_CLOUD_DATAWAREHOUSE\".\"RAW\".\"CSV_FORMAT\""
+  }
+  to {
+    role = "TERRAFORM_ROLE"
+  }
 }
+
