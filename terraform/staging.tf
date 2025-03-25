@@ -1,0 +1,22 @@
+resource "snowflake_file_format" "csv_format" {
+  name      = "CSV_FORMAT"
+  database  = var.database
+  schema    = "RAW"
+  format_type = "CSV"
+
+  field_delimiter = ","
+  skip_header     = 1
+  field_optionally_enclosed_by = "\""
+}
+
+resource "snowflake_stage" "raw_stage" {
+  name      = "RAW_STAGE"
+  database  = var.database
+  schema    = "RAW"
+
+  url                  = var.gcp_bucket
+  storage_integration  = "GCS_INT"
+  file_format          = snowflake_file_format.csv_format.name
+
+  comment = "Stage for raw olist incoming data"
+}

@@ -18,3 +18,8 @@ variable "snowflake_role" {
   description = "The role to use when connecting to Snowflake"
   type        = string
 }
+
+variable "gcp_bucket" {
+  description = "The GCP bucket to use for staging"
+  type        = string
+}
