@@ -7,24 +7,8 @@ resource "snowflake_file_format" "csv_format" {
   field_optionally_enclosed_by = "\""
 }
 
-resource "snowflake_storage_integration" "gcs_integration" {
-  name              = "GCS_INT"
-  comment           = "Storage integration for GCS"
-  type              = "EXTERNAL_STAGE"
-  enabled           = true
-  storage_provider  = "GCS"
-
-  storage_allowed_locations = [
-    "gcs://outbound-snowflake-dev/raw/incoming"
-  ]
-}
-
 
 resource "snowflake_stage" "raw_stage" {
-  depends_on = [
-    snowflake_file_format.csv_format,
-    snowflake_storage_integration.gcs_integration
-  ]
   name      = "RAW_STAGE"
   database  = var.database
   schema    = "RAW"
