@@ -22,7 +22,7 @@ jobs:
       region: us-central1
       env: dev
       project_id: dev-cloud-warehouse
-      repository: cloud-warehouse-snowflake
+      repository: cloud-warehouse-snowflake-dev
 
   terraform-apply:
     name: "Terraform Apply Dev"
