@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     WAREHOUSE: str = os.getenv("SNOWFLAKE_WAREHOUSE"),
     DATABASE: str
     SCHEMA: str ="RAW"
+    REGION: str = "us-central1"
+    PROJECT_ID: str
+
+    LOG_URL_TEMPLATE: str = (
+        "https://console.cloud.google.com/run/jobs/executions/details/{region}/{execution_id}/logs?project={project_id}"
+    )
 
 
 settings = get_settings_class(os.environ.get("ENVIRONMENT") or "DEV")()
