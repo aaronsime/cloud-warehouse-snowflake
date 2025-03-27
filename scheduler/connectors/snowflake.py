@@ -1,16 +1,12 @@
-from snowflake.connector import connect, SnowflakeConnection
+import snowflake.connector
 
-def snowflake_connection(user: str , password: str , account: str , role: str, warehouse: str, database: str, schema: str) -> SnowflakeConnection:
-    conn = connect(
+def get_snowflake_connection(user: str, password: str, account: str, warehouse: str, database: str, schema: str, role: str) -> snowflake.connector.connection:
+    return snowflake.connector.connect(
         user=user,
         password=password,
         account=account,
-        role=role,
         warehouse=warehouse,
         database=database,
         schema=schema,
+        role=role
     )
-    return conn
-
-
-

@@ -1,0 +1,49 @@
+name: "t-Build and Push Docker Image"
+
+on:
+  workflow_call:
+    inputs:
+      region:
+        required: true
+        type: string
+      project_id:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+    secrets:
+      gcp-credentials:
+        required: true
+
+jobs:
+  image-build-and-push:
+    name: Build and push Docker image
+    environment: ${{ inputs.env }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GAR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.region }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.gcp-credentials }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          pull: true
+          push: true
+          tags: |
+            "${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.repository }}/${{ inputs.repository }}:${{ github.sha }}"
+            "${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.repository }}/${{ inputs.repository }}:latest"

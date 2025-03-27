@@ -1,5 +1,6 @@
 schedules:
   daily:
-    - name: crest_segments # this is the job folder in /jobs folder
-      run_job_name: orca-scheduler-cloudrun-job-crest # this is the cloud run job name
+    - name: job_name # this is the job folder in /jobs folder
+      run_job_name: job-name-example # this is the cloud run job name
       region: us-central1 # this is the same region with the cloud run job
+      model_name: model_name # this is the dbt model override

@@ -12,6 +12,18 @@ jobs:
       env: dev
       workspace-name: dev-cloud-warehouse-snowflake
 
+  build-image:
+    name: "Docker Build & Push"
+    needs: terraform-plan
+    uses: ./.github/workflows/template-build-docker-image.yaml
+    secrets:
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
+    with:
+      region: us-central1
+      env: dev
+      project_id: dev-cloud-warehouse
+      repository: cloud-warehouse-snowflake
+
   terraform-apply:
     name: "Terraform Apply Dev"
     needs: terraform-plan

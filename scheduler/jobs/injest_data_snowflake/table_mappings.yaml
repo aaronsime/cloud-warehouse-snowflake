@@ -1,0 +1,10 @@
+tables:
+  olist_customers_dataset.csv: OLIST_CUSTOMERS
+  olist_geolocation_dataset.csv: OLIST_GEOLOCATION
+  olist_orders_dataset.csv: OLIST_ORDERS
+  olist_order_items_dataset.csv: OLIST_ORDER_ITEMS
+  olist_order_payments_dataset.csv: OLIST_ORDER_PAYMENTS
+  olist_order_reviews_dataset.csv: OLIST_ORDER_REVIEWS
+  olist_products_dataset.csv: OLIST_PRODUCTS
+  olist_sellers_dataset.csv: OLIST_SELLERS
+  product_category_name_translation.csv: PRODUCT_CATEGORY_TRANSLATION
