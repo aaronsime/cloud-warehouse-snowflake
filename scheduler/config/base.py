@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional
 
 from pydantic_settings import BaseSettings
 
@@ -26,11 +27,11 @@ def get_settings_class(environment_name: str):  # type: ignore
 
 class Settings(BaseSettings):
 
-    USER: str = os.getenv("SNOWFLAKE_USER")
-    PASSWORD: str = os.getenv("SNOWFLAKE_PASSWORD")
-    ACCOUNT: str = os.getenv("SNOWFLAKE_ACCOUNT")
-    ROLE: str = os.getenv("SNOWFLAKE_ROLE")
-    WAREHOUSE: str = os.getenv("SNOWFLAKE_WAREHOUSE")
+    USER: Optional[str] = os.getenv("SNOWFLAKE_USER")
+    PASSWORD: Optional[str] = os.getenv("SNOWFLAKE_PASSWORD")
+    ACCOUNT: Optional[str] = os.getenv("SNOWFLAKE_ACCOUNT")
+    ROLE: Optional[str] = os.getenv("SNOWFLAKE_ROLE")
+    WAREHOUSE: Optional[str] = os.getenv("SNOWFLAKE_WAREHOUSE")
     DATABASE: str
     SCHEMA: str = "RAW"
     REGION: str = "us-central1"

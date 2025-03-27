@@ -1,19 +1,10 @@
-from scheduler.config.base import log, settings
+from scheduler.config.base import log
 from scheduler.connectors.snowflake import get_snowflake_connection
 from scheduler.utils.common import load_table_mappings
 
 
 def execute() -> None:
-    conn = get_snowflake_connection(
-        user=settings.USER,
-        password=settings.PASSWORD,
-        account=settings.ACCOUNT,
-        warehouse=settings.WAREHOUSE,
-        database=settings.DATABASE,
-        schema=settings.SCHEMA,
-        role=settings.ROLE,
-    )
-
+    conn = get_snowflake_connection()
     cursor = conn.cursor()
 
     mappings = load_table_mappings()
