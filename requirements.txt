@@ -33,3 +33,7 @@ more-itertools~=10.3.0
 pytz~=2024.1
 cloudevents~=1.11.0
 Flask~=3.0.3
+
+functions-framework~=3.8.2
+google~=3.0.0
+protobuf~=5.29.4

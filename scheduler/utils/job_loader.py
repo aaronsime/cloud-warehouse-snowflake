@@ -3,6 +3,7 @@ import os
 
 from scheduler.config.base import log
 
+
 def get_jobs_dict(jobs_folder: str = "scheduler.jobs") -> dict:
     """
     Enumerate all jobs in the jobs folder and return a dictionary of job names and their execute functions.

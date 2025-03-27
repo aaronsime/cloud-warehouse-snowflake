@@ -19,7 +19,6 @@ def get_settings_class(environment_name: str):  # type: ignore
     # importing in-class to avoid circular dependency.
     from .dev import DevSettings
 
-
     return {
         "dev": DevSettings,
     }[environment_name.lower()]
@@ -27,13 +26,13 @@ def get_settings_class(environment_name: str):  # type: ignore
 
 class Settings(BaseSettings):
 
-    USER: str = os.getenv("SNOWFLAKE_USER"),
-    PASSWORD: str = os.getenv("SNOWFLAKE_PASSWORD"),
-    ACCOUNT: str = os.getenv("SNOWFLAKE_ACCOUNT"),
-    ROLE: str = os.getenv("SNOWFLAKE_ROLE"),
-    WAREHOUSE: str = os.getenv("SNOWFLAKE_WAREHOUSE"),
+    USER: str = os.getenv("SNOWFLAKE_USER")
+    PASSWORD: str = os.getenv("SNOWFLAKE_PASSWORD")
+    ACCOUNT: str = os.getenv("SNOWFLAKE_ACCOUNT")
+    ROLE: str = os.getenv("SNOWFLAKE_ROLE")
+    WAREHOUSE: str = os.getenv("SNOWFLAKE_WAREHOUSE")
     DATABASE: str
-    SCHEMA: str ="RAW"
+    SCHEMA: str = "RAW"
     REGION: str = "us-central1"
     PROJECT_ID: str
 

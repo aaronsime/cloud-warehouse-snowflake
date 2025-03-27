@@ -1,6 +1,15 @@
 import snowflake.connector
 
-def get_snowflake_connection(user: str, password: str, account: str, warehouse: str, database: str, schema: str, role: str) -> snowflake.connector.connection:
+
+def get_snowflake_connection(
+    user: str,
+    password: str,
+    account: str,
+    warehouse: str,
+    database: str,
+    schema: str,
+    role: str,
+) -> snowflake.connector.connection:
     return snowflake.connector.connect(
         user=user,
         password=password,
@@ -8,5 +17,5 @@ def get_snowflake_connection(user: str, password: str, account: str, warehouse: 
         warehouse=warehouse,
         database=database,
         schema=schema,
-        role=role
+        role=role,
     )

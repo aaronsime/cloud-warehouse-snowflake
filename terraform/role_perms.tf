@@ -7,5 +7,3 @@ resource "snowflake_grant_privileges_to_account_role" "file_format_usage" {
     object_name = "\"DEV_CLOUD_DATAWAREHOUSE\".\"RAW\".\"CSV_FORMAT\""
   }
 }
-
-

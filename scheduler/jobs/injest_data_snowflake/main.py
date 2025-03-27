@@ -1,5 +1,5 @@
+from scheduler.config.base import log, settings
 from scheduler.connectors.snowflake import get_snowflake_connection
-from scheduler.config.base import settings, log
 from scheduler.utils.common import load_table_mappings
 
 
@@ -11,7 +11,7 @@ def execute() -> None:
         warehouse=settings.WAREHOUSE,
         database=settings.DATABASE,
         schema=settings.SCHEMA,
-        role=settings.ROLE
+        role=settings.ROLE,
     )
 
     cursor = conn.cursor()
@@ -30,6 +30,7 @@ def execute() -> None:
 
     cursor.close()
     conn.close()
+
 
 if __name__ == "__main__":
     execute()

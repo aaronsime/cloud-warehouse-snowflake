@@ -4,11 +4,10 @@ import pathlib
 
 from cloudevents.http.event import CloudEvent
 from functions_framework import cloud_event
-from google.cloud import logging, run_v2
+from google.cloud import run_v2
 from ruamel.yaml import YAML
-from functions.config.base import settings, log
 
-
+from functions.config.base import log, settings
 
 yaml = YAML(typ="safe")
 SETTINGS = yaml.load(pathlib.Path("settings.yaml"))
@@ -30,20 +29,20 @@ def subscribe(cloud_event: CloudEvent) -> None:
 
     client = run_v2.JobsClient()
     for job in jobs_to_run:
-            request = run_v2.RunJobRequest(
-                name=f"projects/{settings.PROJECT_ID}/locations/{job['region']}/jobs/{job['run_job_name']}",
-                overrides={
-                    "container_overrides": [
-                        {
-                            "env": [
-                                {"name": "ENV", "value": settings.ENVIRONMENT},
-                                {"name": "PROJECT_ID", "value": settings.PROJECT_ID},
-                            ]
-                            + [{"name": "JOB_NAME", "value": job["name"]}]
-                        }
-                    ]
-                },
-            )
+        request = run_v2.RunJobRequest(
+            name=f"projects/{settings.PROJECT_ID}/locations/{job['region']}/jobs/{job['run_job_name']}",
+            overrides={
+                "container_overrides": [
+                    {
+                        "env": [
+                            {"name": "ENV", "value": settings.ENVIRONMENT},
+                            {"name": "PROJECT_ID", "value": settings.PROJECT_ID},
+                        ]
+                        + [{"name": "JOB_NAME", "value": job["name"]}]
+                    }
+                ]
+            },
+        )
 
-            client.run_job(request=request)
-            log.info(f"{job['name']} job started.")
+        client.run_job(request=request)
+        log.info(f"{job['name']} job started.")

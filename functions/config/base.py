@@ -19,7 +19,6 @@ def get_settings_class(environment_name: str):  # type: ignore
     # importing in-class to avoid circular dependency.
     from .dev import DevSettings
 
-
     return {
         "dev": DevSettings,
     }[environment_name.lower()]
@@ -30,5 +29,6 @@ class Settings(BaseSettings):
     PROJECT_ID = os.getenv("PROJECT_ID", "dev-cloud-warehouse")
     ENVIRONMENT = os.getenv("ENV", "dev")
     DEFAULT_REGION = os.getenv("REGION", "us-central1")
+
 
 settings = get_settings_class(os.environ.get("ENVIRONMENT") or "DEV")()
