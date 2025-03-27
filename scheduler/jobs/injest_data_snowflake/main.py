@@ -3,7 +3,7 @@ from scheduler.config.base import settings, log
 from scheduler.utils.common import load_table_mappings
 
 
-def execute():
+def execute() -> None:
     conn = get_snowflake_connection(
         user=settings.USER,
         password=settings.PASSWORD,

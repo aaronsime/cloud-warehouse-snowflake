@@ -1,0 +1,7 @@
+[flake8]
+ignore = E203,E501,W503,D100,D415,D104
+max-line-length = 120
+max-complexity = 10
+import-order-style = google
+docstring-convention = google
+exclude = .git,.github,.vscode,__pycache__,.venv,terraform,config,tests,docs,build,dist,*.egg-info
