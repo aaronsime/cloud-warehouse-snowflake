@@ -27,7 +27,6 @@ resource "snowflake_grant_privileges_to_account_role" "gcp_user_schema_grants" {
     "USAGE",
     "CREATE STAGE",
     "CREATE FILE FORMAT",
-    "CREATE TABLE",
-    "INSERT"
+    "CREATE TABLE"
   ]
 }
