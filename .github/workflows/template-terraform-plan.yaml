@@ -58,7 +58,7 @@ jobs:
         id: plan
         run: |
           terraform plan --var-file="vars/${{ inputs.env }}.tfvars" \
-          --var "gcp_snowflake_password=${{ secrets.snowflake_password }}"
+          --var "gcp_snowflake_password=${{ secrets.gcp_snowflake_password }}"
 
 
       - name: "Post Plan to PR"
