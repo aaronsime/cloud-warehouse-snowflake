@@ -1,4 +1,4 @@
-name: "Deploy Cloud Function"
+name: "t-Deploy Cloud Function"
 
 on:
   workflow_call:

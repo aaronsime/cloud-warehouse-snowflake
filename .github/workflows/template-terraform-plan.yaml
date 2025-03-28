@@ -1,4 +1,4 @@
-name: "Terraform Plan Template"
+name: "t-Terraform Plan Template"
 
 on:
   workflow_call:
