@@ -31,16 +31,14 @@ resource "snowflake_grant_privileges_to_account_role" "gcp_user_schema_grants" {
   ]
 }
 
-resource "snowflake_grant_privileges_to_account_role" "insert_on_future_tables" {
+resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
+  privileges        = ["INSERT"]
   account_role_name = snowflake_account_role.gcp_user_role.name
 
-  on_future {
-    tables {
-      all_in_database = false
-      schema_name     = "RAW"
-      database_name   = var.database
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.database}.RAW"
     }
   }
-
-  privileges = ["INSERT"]
 }
