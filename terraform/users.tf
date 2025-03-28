@@ -30,3 +30,15 @@ resource "snowflake_grant_privileges_to_account_role" "gcp_user_schema_grants" {
     "CREATE TABLE"
   ]
 }
+
+resource "snowflake_grant_privileges_to_account_role" "insert_on_tables" {
+  account_role_name = snowflake_account_role.gcp_user_role.name
+
+  on_future {
+    object_type    = "TABLE"
+    schema_name    = "RAW"
+    database_name  = var.database
+  }
+
+  privileges = ["INSERT"]
+}
