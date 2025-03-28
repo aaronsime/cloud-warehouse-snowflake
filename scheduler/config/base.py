@@ -27,9 +27,9 @@ def get_settings_class(environment_name: str):  # type: ignore
 
 class Settings(BaseSettings):
 
-    USER: Optional[str] = os.getenv("SNOWFLAKE_USER")
+    USER: str
     PASSWORD: Optional[str] = os.getenv("SNOWFLAKE_PASSWORD")
-    ACCOUNT: Optional[str] = os.getenv("SNOWFLAKE_ACCOUNT")
+    ACCOUNT: str = "ne36888"
     ROLE: Optional[str] = os.getenv("SNOWFLAKE_ROLE")
     WAREHOUSE: Optional[str] = os.getenv("SNOWFLAKE_WAREHOUSE")
     DATABASE: str

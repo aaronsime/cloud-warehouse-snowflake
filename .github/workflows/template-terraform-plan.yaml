@@ -12,6 +12,8 @@ on:
     secrets:
       tf-api-token:
         required: true
+      gcp_snowflake_password:
+        required: true
 
 jobs:
   terraform-plan:
@@ -55,7 +57,8 @@ jobs:
         continue-on-error: true
         id: plan
         run: |
-          terraform plan --var-file="vars/${{ inputs.env }}.tfvars"
+          terraform plan --var-file="vars/${{ inputs.env }}.tfvars" \
+          --var "gcp_snowflake_password=${{ secrets.snowflake_password }}"
 
 
       - name: "Post Plan to PR"

@@ -12,6 +12,8 @@ on:
     secrets:
       tf-api-token:
         required: true
+      gcp_snowflake_password:
+        required: true
 jobs:
   terraform-apply:
     name: ${{ inputs.env }}
@@ -40,4 +42,6 @@ jobs:
         working-directory: terraform
         id: apply
         run: |
-          terraform apply --var-file="vars/${{ inputs.env }}.tfvars" -auto-approve
+          terraform apply --var-file="vars/${{ inputs.env }}.tfvars" \
+          --var "gcp_snowflake_password=${{ secrets.snowflake_password }}" \
+          --auto-approve

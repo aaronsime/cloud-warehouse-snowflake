@@ -33,3 +33,14 @@ variable "organization_name" {
   description = "The Snowflake organization name"
   type        = string
 }
+
+variable "gcp_snowflake_password" {
+  description = "The password for the GCP Snowflake user"
+  type        = string
+  sensitive   = true
+}
+
+variable "warehouse" {
+  description = "The Snowflake warehouse to use"
+  type        = string
+}
