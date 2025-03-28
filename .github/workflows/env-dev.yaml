@@ -8,7 +8,7 @@ jobs:
     uses: ./.github/workflows/template-terraform-plan.yaml
     secrets:
       tf-api-token: ${{ secrets.TF_API_TOKEN }}
-      gcp_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD_DEV }}
+      gcp_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
     with:
       env: dev
       workspace-name: dev-cloud-warehouse-snowflake
@@ -18,7 +18,7 @@ jobs:
     needs: terraform-plan
     uses: ./.github/workflows/template-build-docker-image.yaml
     secrets:
-      gcp-credentials: ${{ secrets.GCP_CREDENTIALS}}
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
     with:
       region: us-central1
       env: dev
@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/template-terraform-apply.yaml
     secrets:
       tf-api-token: ${{ secrets.TF_API_TOKEN }}
-      gcp_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD}}
+      gcp_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
     with:
       env: dev
       workspace-name: dev-cloud-warehouse-snowflake
