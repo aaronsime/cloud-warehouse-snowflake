@@ -35,3 +35,36 @@ jobs:
     with:
       env: dev
       workspace-name: dev-cloud-warehouse-snowflake
+
+  deploy_run_job_function:
+    uses: ./.github/workflows/template-cloud-functions.yaml
+    secrets:
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
+    with:
+      function_name: "run-job"
+      source_path: "functions/run_job"
+      entry_point: "subscribe"
+      trigger_topic: "cloud-scheduler-topic"
+      region: "us-central1"
+      project: "dev-cloud-warehouse"
+      service_account: "cloud-sa@dev-cloud-warehouse.iam.gserviceaccount.com"
+      env: dev
+      memory: "1GB"
+      cpu: "2"
+      timeout: "540s"
+
+  deploy_run_manual_job_function:
+    uses: ./.github/workflows/template-cloud-functions.yaml
+    secrets:
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
+    with:
+      function_name: "run-manual-job"
+      source_path: "functions/run_manual_job"
+      entry_point: "run"
+      region: "us-central1"
+      project: "dev-cloud-warehouse"
+      service_account: "cloud-sa@dev-cloud-warehouse.iam.gserviceaccount.com"
+      env: dev
+      memory: "1GB"
+      cpu: "2"
+      timeout: "540s"
