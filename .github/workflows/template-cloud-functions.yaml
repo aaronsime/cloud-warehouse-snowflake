@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       trigger_topic:
-        required: true
+        required: false
         type: string
       region:
         required: true
@@ -34,12 +34,6 @@ on:
         required: true
         type: string
       timeout:
-        required: true
-        type: string
-      environment_variables:
-        required: true
-        type: string
-      secret_environment_variables:
         required: true
         type: string
     secrets:
@@ -66,7 +60,6 @@ jobs:
         mkdir -p build/${{ inputs.function_name }}
         cp -R ${{ inputs.source_path }}/* build/${{ inputs.function_name }}/
         cp -R config build/${{ inputs.function_name }}
-        cp -R utils build/${{ inputs.function_name }}
 
     - name: Zip Cloud Function
       run: |
@@ -101,8 +94,6 @@ jobs:
           --timeout ${{ inputs.timeout }} \
           --service-account ${{ inputs.service_account }} \
           --project ${{ inputs.project }} \
-          --set-env-vars ${{ inputs.environment_variables }} \
-          --set-secrets ${{ inputs.secret_environment_variables }} \
           --no-allow-unauthenticated \
           --no-gen2"
 
