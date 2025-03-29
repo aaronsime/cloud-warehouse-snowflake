@@ -59,7 +59,7 @@ jobs:
       run: |
         mkdir -p build/${{ inputs.function_name }}
         cp -R ${{ inputs.source_path }}/* build/${{ inputs.function_name }}/
-        cp -R config build/${{ inputs.function_name }}
+        cp -R config build/${{ inputs.function_name }}/config
 
     - name: Zip Cloud Function
       run: |
