@@ -37,7 +37,7 @@ jobs:
       workspace-name: dev-cloud-warehouse-snowflake
 
   deploy_run_job_function:
-    uses: ./.github/workflows/template-cloud-function.yaml
+    uses: ./.github/workflows/template-cloud-functions.yaml
     secrets:
       gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
     with:
@@ -54,7 +54,7 @@ jobs:
       timeout: "540s"
 
   deploy_run_manual_job_function:
-    uses: ./.github/workflows/template-cloud-function.yaml
+    uses: ./.github/workflows/template-cloud-functions.yaml
     secrets:
       gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
     with:
