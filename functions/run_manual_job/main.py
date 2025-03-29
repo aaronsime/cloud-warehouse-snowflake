@@ -2,7 +2,7 @@ import functions_framework
 from flask import Request
 from google.cloud import run_v2
 
-from functions.config.base import log, settings
+from config.base import log, settings
 
 
 @functions_framework.http

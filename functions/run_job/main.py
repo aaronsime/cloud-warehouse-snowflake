@@ -7,7 +7,7 @@ from functions_framework import cloud_event
 from google.cloud import run_v2
 from ruamel.yaml import YAML
 
-from functions.config.base import log, settings
+from config.base import log, settings
 
 yaml = YAML(typ="safe")
 SETTINGS = yaml.load(pathlib.Path("settings.yaml"))

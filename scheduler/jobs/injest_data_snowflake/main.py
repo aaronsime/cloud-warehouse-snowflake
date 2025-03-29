@@ -1,6 +1,6 @@
-from scheduler.config.base import log
-from scheduler.connectors.snowflake import get_snowflake_connection
-from scheduler.utils.common import load_table_mappings
+from config.base import log
+from connectors.snowflake import get_snowflake_connection
+from utils.common import load_table_mappings
 
 
 def execute() -> None:

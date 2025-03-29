@@ -1,7 +1,7 @@
 import importlib
 import os
 
-from scheduler.config.base import log
+from config.base import log
 
 
 def get_jobs_dict(jobs_folder: str = "scheduler.jobs") -> dict:

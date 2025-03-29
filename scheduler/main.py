@@ -1,8 +1,8 @@
 import os
 
-from scheduler.config.base import log, settings
-from scheduler.utils.common import get_execution_id
-from scheduler.utils.job_loader import get_jobs_dict
+from config.base import log, settings
+from utils.common import get_execution_id
+from utils.job_loader import get_jobs_dict
 
 
 def main() -> None:

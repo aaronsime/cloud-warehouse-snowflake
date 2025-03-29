@@ -1,6 +1,6 @@
 from snowflake.connector import SnowflakeConnection, connect
 
-from scheduler.config.base import settings
+from config.base import settings
 
 
 def get_snowflake_connection() -> SnowflakeConnection:

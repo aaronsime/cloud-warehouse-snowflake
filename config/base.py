@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     SCHEMA: str = "RAW"
     REGION: str = "us-central1"
     PROJECT_ID: str
+    DEFAULT_REGION: str = "us-central1"
+    ENVIRONMENT: str
 
     LOG_URL_TEMPLATE: str = (
         "https://console.cloud.google.com/run/jobs/executions/details/{region}/{execution_id}/logs?project={project_id}"
