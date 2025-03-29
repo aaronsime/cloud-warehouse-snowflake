@@ -85,7 +85,7 @@ jobs:
       run: |
         deploy_command="gcloud functions deploy ${{ inputs.function_name }} \
           --runtime python39 \
-          --source ${{ inputs.source_path }} \
+          --source build/${{ inputs.function_name }} \
           --entry-point ${{ inputs.entry_point }} \
           --region ${{ inputs.region }} \
           --memory ${{ inputs.memory }} \
