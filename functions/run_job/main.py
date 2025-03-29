@@ -1,8 +1,6 @@
 import base64
 import json
-import os
 import pathlib
-import sys
 
 from cloudevents.http.event import CloudEvent
 from functions_framework import cloud_event
@@ -10,8 +8,6 @@ from google.cloud import run_v2
 from ruamel.yaml import YAML
 
 from config.base import log, settings
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 yaml = YAML(typ="safe")
 SETTINGS = yaml.load(pathlib.Path("settings.yaml"))

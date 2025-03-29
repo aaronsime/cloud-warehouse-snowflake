@@ -1,13 +1,8 @@
-import os
-import sys
-
 import functions_framework
 from flask import Request
 from google.cloud import run_v2
 
 from config.base import log, settings
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 @functions_framework.http
