@@ -75,7 +75,7 @@ jobs:
 
     - name: Authenticate to Google Cloud
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.gcp-credentials }}
       run: |
         echo "${GOOGLE_APPLICATION_CREDENTIALS}" > ${{ github.workspace }}/key.json
         gcloud auth activate-service-account --key-file=${{ github.workspace }}/key.json
