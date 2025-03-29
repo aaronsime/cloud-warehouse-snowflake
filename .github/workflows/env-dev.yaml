@@ -39,7 +39,7 @@ jobs:
   deploy_run_job_function:
     uses: ./.github/workflows/template-cloud-functions.yaml
     secrets:
-      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
     with:
       function_name: "run-job"
       source_path: "functions/run_job"
@@ -56,7 +56,7 @@ jobs:
   deploy_run_manual_job_function:
     uses: ./.github/workflows/template-cloud-functions.yaml
     secrets:
-      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
     with:
       function_name: "run-manual-job"
       source_path: "functions/run_manual_job"

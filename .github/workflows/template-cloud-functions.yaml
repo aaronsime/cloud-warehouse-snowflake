@@ -75,7 +75,7 @@ jobs:
 
     - name: Authenticate to Google Cloud
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.gcp-credentials }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
       run: |
         echo "${GOOGLE_APPLICATION_CREDENTIALS}" > ${{ github.workspace }}/key.json
         gcloud auth activate-service-account --key-file=${{ github.workspace }}/key.json
@@ -85,8 +85,7 @@ jobs:
       run: |
         deploy_command="gcloud functions deploy ${{ inputs.function_name }} \
           --runtime python39 \
-          --trigger-topic ${{ inputs.trigger_topic }} \
-          --source build/${{ inputs.function_name }} \
+          --source ${{ inputs.source_path }} \
           --entry-point ${{ inputs.entry_point }} \
           --region ${{ inputs.region }} \
           --memory ${{ inputs.memory }} \
@@ -96,6 +95,12 @@ jobs:
           --project ${{ inputs.project }} \
           --no-allow-unauthenticated \
           --no-gen2"
+
+        if [[ -n "${{ inputs.trigger_topic }}" ]]; then
+          deploy_command+=" --trigger-topic ${{ inputs.trigger_topic }}"
+        else
+          deploy_command+=" --trigger-http"
+        fi
 
         echo "Running command: $deploy_command"
         eval $deploy_command
