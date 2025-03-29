@@ -57,9 +57,9 @@ jobs:
 
     - name: Prepare Cloud Function
       run: |
-        mkdir -p build/${{ inputs.function_name }}
-        cp -R ${{ inputs.source_path }}/* build/${{ inputs.function_name }}/
-        cp -R config build/${{ inputs.function_name }}/config
+        mkdir -p build
+        cp -R ${{ inputs.source_path }} build/${{ inputs.function_name }}
+        cp -R config build/
 
     - name: Zip Cloud Function
       run: |
