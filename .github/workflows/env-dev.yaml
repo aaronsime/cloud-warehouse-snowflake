@@ -43,7 +43,7 @@ jobs:
     with:
       function_name: "run-job"
       source_path: "functions/run_job"
-      entry_point: "main"
+      entry_point: "subscribe"
       trigger_topic: "cloud-scheduler-topic"
       region: "us-central1"
       project: "dev-cloud-warehouse"
@@ -60,7 +60,7 @@ jobs:
     with:
       function_name: "run-manual-job"
       source_path: "functions/run_manual_job"
-      entry_point: "main"
+      entry_point: "run"
       region: "us-central1"
       project: "dev-cloud-warehouse"
       service_account: "cloud-sa@dev-cloud-warehouse.iam.gserviceaccount.com"
