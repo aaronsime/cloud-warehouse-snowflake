@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=True
-ENV JOB_NAME="example"
+ENV JOB_NAME="snowflake_ingestion"
 ENV PYTHONPATH="/app"
 
 # Use custom entrypoint script

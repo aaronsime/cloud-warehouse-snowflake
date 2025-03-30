@@ -1,6 +1,5 @@
 import logging
 import os
-from typing import Optional
 
 from pydantic_settings import BaseSettings
 
@@ -28,7 +27,7 @@ def get_settings_class(environment_name: str):  # type: ignore
 class Settings(BaseSettings):
 
     USER: str = "GCP_USER"
-    PASSWORD: Optional[str] = os.getenv("SNOWFLAKE_PASSWORD")
+    PASSWORD: str = "Secure_Password1234!"
     ACCOUNT: str = "QMUGLJO-NE36888"
     ROLE: str = "GCP_USER_ROLE"
     WAREHOUSE: str = "COMPUTE_WH"
