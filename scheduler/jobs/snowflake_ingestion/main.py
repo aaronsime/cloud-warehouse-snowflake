@@ -11,7 +11,7 @@ def execute() -> None:
     for file_name, table_name in mappings["tables"].items():
         log.info(f"⏳ Loading {file_name} into RAW.{table_name}")
         copy_stmt = f"""
-            COPY INTO RAW.{table_name}
+            COPY INTO RAW."{table_name}"
             FROM @RAW.RAW_STAGE/{file_name}
             FILE_FORMAT = (FORMAT_NAME = RAW.CSV_FORMAT)
             ON_ERROR = 'CONTINUE'
