@@ -1,18 +1,22 @@
-# Use official Python image
+# Use official slim Python image
 FROM python:3.12-slim
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy all code into the image
+# Copy all project files into the container
 COPY . .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r scheduler/requirements.txt
+# Make the entrypoint executable
+RUN chmod +x /app/entrypoint.sh
 
-# Set default env (can be overridden at runtime)
+# Install dependencies from root-level requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Set environment variables
 ENV PYTHONUNBUFFERED=True
 ENV JOB_NAME="example"
+ENV PYTHONPATH="/app"
 
-# Run the job dynamically via scheduler/main.py
-CMD ["python", "scheduler/main.py"]
+# Use custom entrypoint script
+ENTRYPOINT ["/app/entrypoint.sh"]
