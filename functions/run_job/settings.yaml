@@ -1,5 +1,5 @@
 schedules:
   daily:
-    - name: ingest_snowflake_ingestion # this is the job folder in /jobs folder
+    - name: snowflake_ingestion # this is the job folder in /jobs folder
       run_job_name: cloud-scheduler-cloudrun-job-snowflake-ingestion # this is the cloud run job name
       region: us-central1 # this is the same region with the cloud run job
