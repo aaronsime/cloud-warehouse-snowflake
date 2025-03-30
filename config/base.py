@@ -27,11 +27,11 @@ def get_settings_class(environment_name: str):  # type: ignore
 
 class Settings(BaseSettings):
 
-    USER: str
+    USER: str = "GCP_USER"
     PASSWORD: Optional[str] = os.getenv("SNOWFLAKE_PASSWORD")
-    ACCOUNT: str = "ne36888"
-    ROLE: Optional[str] = os.getenv("SNOWFLAKE_ROLE")
-    WAREHOUSE: Optional[str] = os.getenv("SNOWFLAKE_WAREHOUSE")
+    ACCOUNT: str = "QMUGLJO-NE36888"
+    ROLE: str = "GCP_USER_ROLE"
+    WAREHOUSE: str = "COMPUTE_WH"
     DATABASE: str
     SCHEMA: str = "RAW"
     REGION: str = "us-central1"
