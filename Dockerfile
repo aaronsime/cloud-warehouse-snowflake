@@ -7,6 +7,8 @@ WORKDIR /app
 # Copy all project files into the container
 COPY . .
 
+COPY scheduler/jobs/snowflake_ingestion/table_mappings.yaml /app/
+
 # Make the entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
