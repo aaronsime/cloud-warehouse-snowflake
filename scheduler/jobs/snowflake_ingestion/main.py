@@ -14,6 +14,8 @@ def execute() -> None:
     log.info(f"🔍 Using database: {settings.DATABASE}")
     cursor.execute(f"USE SCHEMA {settings.SCHEMA}")
     log.info(f"🔍 Using schema: {settings.SCHEMA}")
+    cursor.execute(f"USE WAREHOUSE {settings.WAREHOUSE}")
+    log.info(f"🏗️ Using warehouse: {settings.WAREHOUSE}")
 
     mappings = load_table_mappings()
     for file_name, table_name in mappings["tables"].items():
