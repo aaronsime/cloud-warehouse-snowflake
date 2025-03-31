@@ -7,6 +7,9 @@ def execute() -> None:
     conn = get_snowflake_connection()
     cursor = conn.cursor()
 
+    cursor.execute("SELECT CURRENT_ROLE(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
+    log.info(f"🔍 Session context: {cursor.fetchone()}")
+
     cursor.execute(f"USE DATABASE {settings.DATABASE}")
     log.info(f"🔍 Using database: {settings.DATABASE}")
     cursor.execute(f"USE SCHEMA {settings.SCHEMA}")
@@ -14,15 +17,16 @@ def execute() -> None:
 
     mappings = load_table_mappings()
     for file_name, table_name in mappings["tables"].items():
-        log.info(f"⏳ Loading {file_name} into RAW.{table_name}")
+        log.info(f"⏳ Loading {file_name} into {settings.SCHEMA}.{table_name}")
         copy_stmt = f"""
             COPY INTO "{settings.DATABASE}"."{settings.SCHEMA}"."{table_name}"
-            FROM @{settings.DATABASE}.{settings.SCHEMA}.RAW_STAGE/{file_name}
-            FILE_FORMAT = (FORMAT_NAME = {settings.DATABASE}.{settings.SCHEMA}.CSV_FORMAT)
+            FROM @DEV_CLOUD_DATAWAREHOUSE.RAW.RAW_STAGE/{file_name}
+            FILE_FORMAT = (FORMAT_NAME = DEV_CLOUD_DATAWAREHOUSE.RAW.CSV_FORMAT)
             ON_ERROR = 'CONTINUE'
         """
+        log.debug(f"Running COPY statement:\n{copy_stmt}")
         cursor.execute(copy_stmt)
-        log.info(f"✅ Loaded {file_name} into RAW.{table_name}")
+        log.info(f"✅ Loaded {file_name} into {settings.SCHEMA}.{table_name}")
 
     cursor.close()
     conn.close()
