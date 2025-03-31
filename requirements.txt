@@ -37,3 +37,6 @@ Flask~=3.0.3
 functions-framework~=3.8.2
 google~=3.0.0
 protobuf~=5.29.4
+
+snowflake-connector-python
+ruamel.yaml
