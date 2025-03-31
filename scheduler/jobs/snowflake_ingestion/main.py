@@ -8,7 +8,9 @@ def execute() -> None:
     cursor = conn.cursor()
 
     cursor.execute(f"USE DATABASE {settings.DATABASE}")
+    log.info(f"🔍 Using database: {settings.DATABASE}")
     cursor.execute(f"USE SCHEMA {settings.SCHEMA}")
+    log.info(f"🔍 Using schema: {settings.SCHEMA}")
 
     mappings = load_table_mappings()
     for file_name, table_name in mappings["tables"].items():
