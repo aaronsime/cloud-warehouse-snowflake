@@ -117,5 +117,17 @@ You're running a data pipeline where multiple dbt transformation jobs must be tr
 
 ---
 
+## Testing
+
+```
+{
+    "run_job_name": "cloud-scheduler-cloudrun-job-example",
+    "region": "us-central1",
+    "overrides": {
+        "JOB_NAME": "job_example"
+    }
+}
+```
+
 ## 🧑‍💻 Author
 Built by [Aaron] 💡
