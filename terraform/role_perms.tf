@@ -70,6 +70,7 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
   }
 }
 
+#### DBT ROLE GRANTS ####
 resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["USAGE"]
@@ -91,28 +92,28 @@ resource "snowflake_grant_privileges_to_account_role" "database_usage" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema_usage" {
-  for_each = toset([
-    snowflake_schema.raw.name,
-    snowflake_schema.staging.name,
-    snowflake_schema.intermediate.name,
-    snowflake_schema.consume.name
-  ])
+  for_each = {
+    raw          = snowflake_schema.raw.name
+    staging      = snowflake_schema.staging.name
+    intermediate = snowflake_schema.intermediate.name
+    consume      = snowflake_schema.consume.name
+  }
 
   account_role_name = snowflake_account_role.dbt_role.name
-  privileges        = ["USAGE", "CREATE TABLE", "CREATE VIEW", "MODIFY"]
+  privileges        = ["USAGE"]
 
   on_schema {
-    schema_name = "${var.database}."${each.value}"
+    schema_name = each.value
   }
 }
 
-resource "snowflake_grant_privileges_to_account_role" "future_tables" {
-  for_each = toset([
-    snowflake_schema.raw.name,
-    snowflake_schema.staging.name,
-    snowflake_schema.intermediate.name,
-    snowflake_schema.consume.name
-  ])
+resource "snowflake_grant_privileges_to_account_role" "future_table_privileges" {
+  for_each = {
+    raw          = snowflake_schema.raw.name
+    staging      = snowflake_schema.staging.name
+    intermediate = snowflake_schema.intermediate.name
+    consume      = snowflake_schema.consume.name
+  }
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE"]
@@ -120,18 +121,18 @@ resource "snowflake_grant_privileges_to_account_role" "future_tables" {
   on_schema_object {
     future {
       object_type_plural = "TABLES"
-      in_schema          = "${var.database}."${each.value}"
+      in_schema          = each.value
     }
   }
 }
 
-resource "snowflake_grant_privileges_to_account_role" "future_views" {
-  for_each = toset([
-    snowflake_schema.raw.name,
-    snowflake_schema.staging.name,
-    snowflake_schema.intermediate.name,
-    snowflake_schema.consume.name
-  ])
+resource "snowflake_grant_privileges_to_account_role" "future_view_privileges" {
+  for_each = {
+    raw          = snowflake_schema.raw.name
+    staging      = snowflake_schema.staging.name
+    intermediate = snowflake_schema.intermediate.name
+    consume      = snowflake_schema.consume.name
+  }
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT"]
@@ -139,7 +140,7 @@ resource "snowflake_grant_privileges_to_account_role" "future_views" {
   on_schema_object {
     future {
       object_type_plural = "VIEWS"
-      in_schema          = "${var.database}."${each.value}"
+      in_schema          = each.value
     }
   }
 }
