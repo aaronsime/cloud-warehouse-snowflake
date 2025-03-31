@@ -57,3 +57,15 @@ resource "snowflake_grant_privileges_to_account_role" "compute_wh_operate" {
     object_name = "COMPUTE_WH"
   }
 }
+
+resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
+  account_role_name = snowflake_account_role.gcp_user_role.name
+  privileges        = ["INSERT"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "\"DEV_CLOUD_DATAWAREHOUSE\".\"RAW\""
+    }
+  }
+}
