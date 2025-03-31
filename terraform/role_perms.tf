@@ -70,7 +70,6 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
   }
 }
 
-#### DBT ROLE GRANTS ####
 resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["USAGE"]
@@ -92,55 +91,34 @@ resource "snowflake_grant_privileges_to_account_role" "database_usage" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema_usage" {
-  for_each = {
-    raw          = snowflake_schema.raw.name
-    staging      = snowflake_schema.staging.name
-    intermediate = snowflake_schema.intermediate.name
-    consume      = snowflake_schema.consume.name
-  }
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["USAGE"]
 
   on_schema {
-    schema_name = each.value
+    schema_name = "${var.database}.${each.value}"
   }
 }
 
 resource "snowflake_grant_privileges_to_account_role" "future_table_privileges" {
-  for_each = {
-    raw          = snowflake_schema.raw.name
-    staging      = snowflake_schema.staging.name
-    intermediate = snowflake_schema.intermediate.name
-    consume      = snowflake_schema.consume.name
-  }
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE"]
 
-  on_schema_object {
-    future {
-      object_type_plural = "TABLES"
-      in_schema          = each.value
-    }
+  on_schema {
+    schema_name = "${var.database}.${each.value}"
   }
 }
 
 resource "snowflake_grant_privileges_to_account_role" "future_view_privileges" {
-  for_each = {
-    raw          = snowflake_schema.raw.name
-    staging      = snowflake_schema.staging.name
-    intermediate = snowflake_schema.intermediate.name
-    consume      = snowflake_schema.consume.name
-  }
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT"]
 
-  on_schema_object {
-    future {
-      object_type_plural = "VIEWS"
-      in_schema          = each.value
-    }
+  on_schema {
+    schema_name = "${var.database}.${each.value}"
   }
 }
