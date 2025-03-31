@@ -1,6 +1,6 @@
 tables:
-  olist_customers_dataset.csv: "OLIST_CUSTOMERS"
-  olist_geolocation_dataset.csv: "OLIST_GEOLOCATION"
+  olist_customers_dataset.csv: OLIST_CUSTOMERS
+  olist_geolocation_dataset.csv: OLIST_GEOLOCATION
   olist_orders_dataset.csv: OLIST_ORDERS
   olist_order_items_dataset.csv: OLIST_ORDER_ITEMS
   olist_order_payments_dataset.csv: OLIST_ORDER_PAYMENTS
