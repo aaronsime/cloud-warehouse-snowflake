@@ -7,6 +7,9 @@ def execute() -> None:
     conn = get_snowflake_connection()
     cursor = conn.cursor()
 
+    cursor.execute(f"USE DATABASE {settings.DATABASE}")
+    cursor.execute(f"USE SCHEMA {settings.SCHEMA}")
+
     mappings = load_table_mappings()
     for file_name, table_name in mappings["tables"].items():
         log.info(f"⏳ Loading {file_name} into RAW.{table_name}")
