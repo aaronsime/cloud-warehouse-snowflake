@@ -44,7 +44,7 @@ resource "snowflake_grant_privileges_to_account_role" "compute_wh_usage" {
 
   on_account_object {
     object_type = "WAREHOUSE"
-    object_name = "COMPUTE_WH"
+    object_name = var.warehouse
   }
 }
 
@@ -54,7 +54,7 @@ resource "snowflake_grant_privileges_to_account_role" "compute_wh_operate" {
 
   on_account_object {
     object_type = "WAREHOUSE"
-    object_name = "COMPUTE_WH"
+    object_name = var.warehouse
   }
 }
 
@@ -66,6 +66,80 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
     future {
       object_type_plural = "TABLES"
       in_schema          = "\"DEV_CLOUD_DATAWAREHOUSE\".\"RAW\""
+    }
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["USAGE"]
+
+  on_account_object {
+    object_type = "WAREHOUSE"
+    object_name = var.warehouse
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "database_usage" {
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["USAGE"]
+
+  on_account_object {
+    object_type = "DATABASE"
+    object_name = var.database
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "schema_usage" {
+  for_each = toset([
+    snowflake_schema.raw.name,
+    snowflake_schema.staging.name,
+    snowflake_schema.intermediate.name,
+    snowflake_schema.consume.name
+  ])
+
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["USAGE", "CREATE TABLE", "CREATE VIEW", "MODIFY"]
+
+  on_schema {
+    schema_name = "${var.database}."${each.value}"
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "future_tables" {
+  for_each = toset([
+    snowflake_schema.raw.name,
+    snowflake_schema.staging.name,
+    snowflake_schema.intermediate.name,
+    snowflake_schema.consume.name
+  ])
+
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.database}."${each.value}"
+    }
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "future_views" {
+  for_each = toset([
+    snowflake_schema.raw.name,
+    snowflake_schema.staging.name,
+    snowflake_schema.intermediate.name,
+    snowflake_schema.consume.name
+  ])
+
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["SELECT"]
+
+  on_schema_object {
+    future {
+      object_type_plural = "VIEWS"
+      in_schema          = "${var.database}."${each.value}"
     }
   }
 }

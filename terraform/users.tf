@@ -1,7 +1,3 @@
-resource "snowflake_account_role" "gcp_user_role" {
-  name = "GCP_USER_ROLE"
-}
-
 resource "snowflake_user" "gcp_user" {
   name              = "GCP_USER"
   login_name        = "GCP_USER"
