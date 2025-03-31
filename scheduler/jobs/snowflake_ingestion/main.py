@@ -12,8 +12,8 @@ def execute() -> None:
         log.info(f"⏳ Loading {file_name} into RAW.{table_name}")
         copy_stmt = f"""
             COPY INTO "{settings.DATABASE}"."{settings.SCHEMA}"."{table_name}"
-            FROM "@{settings.DATABASE}.{settings.SCHEMA}.RAW_STAGE/{file_name}"
-            FILE_FORMAT = (FORMAT_NAME = "{settings.DATABASE}.{settings.SCHEMA}.CSV_FORMAT")
+            FROM @{settings.DATABASE}.{settings.SCHEMA}.RAW_STAGE/{file_name}
+            FILE_FORMAT = (FORMAT_NAME = {settings.DATABASE}.{settings.SCHEMA}.CSV_FORMAT)
             ON_ERROR = 'CONTINUE'
         """
         cursor.execute(copy_stmt)
