@@ -116,6 +116,20 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_privileges" 
   }
 }
 
+resource "snowflake_grant_privileges_to_account_role" "existing_raw_tables" {
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE"]
+
+  on_schema_object {
+    all {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.database}.${each.value}"
+    }
+  }
+}
+
+
 resource "snowflake_grant_privileges_to_account_role" "future_view_privileges" {
   for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
 
