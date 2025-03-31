@@ -42,3 +42,37 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
     }
   }
 }
+
+resource "snowflake_warehouse_grant" "compute_wh_usage" {
+  warehouse_name = "COMPUTE_WH"
+  privilege      = "USAGE"
+  roles          = snowflake_account_role.gcp_user_role.name
+}
+
+resource "snowflake_warehouse_grant" "compute_wh_operate" {
+  warehouse_name = "COMPUTE_WH"
+  privilege      = "OPERATE"
+  roles          = snowflake_account_role.gcp_user_role.name
+}
+
+resource "snowflake_integration_grant" "gcs_int_usage" {
+  integration_name = "GCS_INT"
+  privilege        = "USAGE"
+  roles            = snowflake_account_role.gcp_user_role.name
+}
+
+resource "snowflake_stage_grant" "raw_stage_usage" {
+  database_name = "DEV_CLOUD_DATAWAREHOUSE"
+  schema_name   = "RAW"
+  stage_name    = "RAW_STAGE"
+  privilege     = "USAGE"
+  roles         = snowflake_account_role.gcp_user_role.name
+}
+
+resource "snowflake_file_format_grant" "csv_format_usage" {
+  database_name = "DEV_CLOUD_DATAWAREHOUSE"
+  schema_name   = "RAW"
+  file_format_name = "CSV_FORMAT"
+  privilege     = "USAGE"
+  roles         = snowflake_account_role.gcp_user_role.name
+}
