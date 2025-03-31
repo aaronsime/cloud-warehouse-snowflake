@@ -43,36 +43,42 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
   }
 }
 
-resource "snowflake_warehouse_grant" "compute_wh_usage" {
-  warehouse_name = "COMPUTE_WH"
-  privilege      = "USAGE"
-  roles          = snowflake_account_role.gcp_user_role.name
+resource "snowflake_grant_privileges_to_account_role" "compute_wh_usage" {
+  privileges     = ["USAGE", "OPERATE"]
+  account_role   = snowflake_account_role.gcp_user_role.name
+  on_account_object {
+    object_type = "WAREHOUSE"
+    object_name = "COMPUTE_WH"
+  }
 }
 
-resource "snowflake_warehouse_grant" "compute_wh_operate" {
-  warehouse_name = "COMPUTE_WH"
-  privilege      = "OPERATE"
-  roles          = snowflake_account_role.gcp_user_role.name
+resource "snowflake_grant_privileges_to_account_role" "raw_stage_usage" {
+  privileges     = ["USAGE", "READ"]
+  account_role   = snowflake_account_role.gcp_user_role.name
+  on_schema_object {
+    object_type = "STAGE"
+    object_name = "RAW_STAGE"
+    schema_name = "RAW"
+    database_name = "DEV_CLOUD_DATAWAREHOUSE"
+  }
 }
 
-resource "snowflake_integration_grant" "gcs_int_usage" {
-  integration_name = "GCS_INT"
-  privilege        = "USAGE"
-  roles            = snowflake_account_role.gcp_user_role.name
+resource "snowflake_grant_privileges_to_account_role" "csv_format_usage" {
+  privileges     = ["USAGE"]
+  account_role   = snowflake_account_role.gcp_user_role.name
+  on_schema_object {
+    object_type = "FILE FORMAT"
+    object_name = "CSV_FORMAT"
+    schema_name = "RAW"
+    database_name = "DEV_CLOUD_DATAWAREHOUSE"
+  }
 }
 
-resource "snowflake_stage_grant" "raw_stage_usage" {
-  database_name = "DEV_CLOUD_DATAWAREHOUSE"
-  schema_name   = "RAW"
-  stage_name    = "RAW_STAGE"
-  privilege     = "USAGE"
-  roles         = snowflake_account_role.gcp_user_role.name
-}
-
-resource "snowflake_file_format_grant" "csv_format_usage" {
-  database_name = "DEV_CLOUD_DATAWAREHOUSE"
-  schema_name   = "RAW"
-  file_format_name = "CSV_FORMAT"
-  privilege     = "USAGE"
-  roles         = snowflake_account_role.gcp_user_role.name
+resource "snowflake_grant_privileges_to_account_role" "gcs_int_usage" {
+  privileges     = ["USAGE"]
+  account_role   = snowflake_account_role.gcp_user_role.name
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = "GCS_INT"
+  }
 }
