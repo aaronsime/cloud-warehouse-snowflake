@@ -70,6 +70,7 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_insert" {
   }
 }
 
+##### DBT ROLE GRANTS #####
 resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["USAGE"]
@@ -107,8 +108,11 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_privileges" 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE"]
 
-  on_schema {
-    schema_name = "${var.database}.${each.value}"
+  on_schema_object {
+    future {
+      object_type_plural = "TABLES"
+      in_schema          = "${var.database}.${each.value}"
+    }
   }
 }
 
@@ -118,7 +122,10 @@ resource "snowflake_grant_privileges_to_account_role" "future_view_privileges" {
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT"]
 
-  on_schema {
-    schema_name = "${var.database}.${each.value}"
+  on_schema_object {
+    future {
+      object_type_plural = "VIEWS"
+      in_schema          = "${var.database}.${each.value}"
+    }
   }
 }
