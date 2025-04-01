@@ -1,14 +1,12 @@
-your_profile_name:
+snow_wh:
   target: dev
   outputs:
     dev:
       type: snowflake
-      account: your_account_id  # e.g., xy12345.ap-southeast-2
-      user: your_user
-      password: your_password
-      role: your_role  # e.g., DBT_ROLE or SYSADMIN
-      database: your_database  # e.g., DEV_CLOUD_DATAWAREHOUSE
-      warehouse: your_warehouse  # e.g., COMPUTE_WH
-      schema: your_schema  # e.g., STAGING
-      threads: 4
-      client_session_keep_alive: False
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA') }}"
