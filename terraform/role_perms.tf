@@ -129,6 +129,18 @@ resource "snowflake_grant_privileges_to_account_role" "existing_raw_tables" {
   }
 }
 
+resource "snowflake_grant_privileges_to_account_role" "existing_views" {
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["SELECT"]
+
+  on_schema_object {
+    all {
+      object_type_plural = "VIEWS"
+      in_schema          = "${var.database}.${each.value}"
+    }
+  }
+}
 
 resource "snowflake_grant_privileges_to_account_role" "future_view_privileges" {
   for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
