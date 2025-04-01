@@ -92,7 +92,7 @@ resource "snowflake_grant_privileges_to_account_role" "database_usage" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema_usage" {
-  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["USAGE"]
@@ -103,7 +103,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema_usage" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "future_table_privileges" {
-  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE"]
@@ -117,7 +117,7 @@ resource "snowflake_grant_privileges_to_account_role" "future_table_privileges" 
 }
 
 resource "snowflake_grant_privileges_to_account_role" "existing_raw_tables" {
-  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE"]
 
@@ -131,7 +131,7 @@ resource "snowflake_grant_privileges_to_account_role" "existing_raw_tables" {
 
 
 resource "snowflake_grant_privileges_to_account_role" "future_view_privileges" {
-  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME"])
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
 
   account_role_name = snowflake_account_role.dbt_role.name
   privileges        = ["SELECT"]

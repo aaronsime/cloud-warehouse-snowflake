@@ -21,3 +21,9 @@ resource "snowflake_schema" "consume" {
   database = var.database
   comment  = "Final analytical and business-facing tables"
 }
+
+resource "snowflake_schema" "aaron_sandbox" {
+  name     = "AARON_SANDBOX"
+  database = var.database
+  comment  = "Aaron's sandbox for testing"
+}
