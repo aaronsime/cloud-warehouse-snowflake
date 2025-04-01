@@ -95,7 +95,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema_usage" {
   for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
 
   account_role_name = snowflake_account_role.dbt_role.name
-  privileges        = ["USAGE", "CREATE"]
+  privileges        = ["USAGE", "CREATE TABLE", "CREATE VIEW"]
 
   on_schema {
     schema_name = "${var.database}.${each.value}"
