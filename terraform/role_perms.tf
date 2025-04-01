@@ -143,3 +143,14 @@ resource "snowflake_grant_privileges_to_account_role" "future_view_privileges" {
     }
   }
 }
+
+resource "snowflake_grant_privileges_to_account_role" "create_table_schema_privileges" {
+  for_each = toset(["RAW", "STAGING", "INTERMEDIATE", "CONSUME", "AARON_SANDBOX"])
+
+  account_role_name = snowflake_account_role.dbt_role.name
+  privileges        = ["CREATE TABLE"]
+
+  on_schema {
+    schema_name = "${var.database}.${each.value}"
+  }
+}
