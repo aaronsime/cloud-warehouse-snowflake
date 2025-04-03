@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: raw
+    database: DEV_CLOUD_DATAWAREHOUSE
+    schema: RAW
+    tables:
+      - name: OLIST_GEOLOCATION
+        description: "Raw geolocation data."
+        columns:
+          - name: geolocation_zip_code_prefix
+            description: "Zip code prefix"
+          - name: geolocation_lat
+            description: "latitude"
+          - name: geolocation_lng
+            description: "longitude"
+          - name: geolocation_city
+            description: "ity"
+          - name: geolocation_state
+            description: "state"
