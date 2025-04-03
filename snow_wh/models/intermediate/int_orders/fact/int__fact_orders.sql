@@ -53,5 +53,3 @@ left join order_status os
     on o.order_status = os.order_status
 left join geo g
     on c.customer_zip_code_prefix = g.zip_code_prefix
-        and c.customer_city = g.city
-        and c.customer_state = g.state

@@ -1,8 +1,6 @@
 with dim_location as (
     select
         zip_code_prefix,
-        latitude,
-        longitude,
         city,
         state,
         country
