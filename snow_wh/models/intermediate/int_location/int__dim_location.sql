@@ -2,8 +2,7 @@ with dim_location as (
     select
         zip_code_prefix,
         city,
-        state,
-        country
+        state
     from {{ ref('staging__geo') }}
 )
 select *

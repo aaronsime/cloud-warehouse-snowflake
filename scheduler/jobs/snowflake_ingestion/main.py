@@ -8,14 +8,18 @@ def execute() -> None:
     cursor = conn.cursor()
 
     cursor.execute("SELECT CURRENT_ROLE(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
-    log.info(f"🔍 Session context: {cursor.fetchone()}")
+    log.info(f"Session context: {cursor.fetchone()}")
 
-    cursor.execute(f"USE DATABASE {settings.DATABASE}")
-    log.info(f"🔍 Using database: {settings.DATABASE}")
-    cursor.execute(f"USE SCHEMA {settings.SCHEMA}")
-    log.info(f"🔍 Using schema: {settings.SCHEMA}")
-    cursor.execute(f"USE WAREHOUSE {settings.WAREHOUSE}")
-    log.info(f"🏗️ Using warehouse: {settings.WAREHOUSE}")
+    cursor.execute(
+        f"""
+        USE DATABASE {settings.DATABASE};
+        USE SCHEMA {settings.SCHEMA};
+        USE WAREHOUSE {settings.WAREHOUSE};
+    """
+    )
+    log.info(
+        f"Using database: {settings.DATABASE}, schema: {settings.SCHEMA}, warehouse: {settings.WAREHOUSE}"
+    )
 
     mappings = load_table_mappings()
     for file_name, table_name in mappings["tables"].items():
@@ -28,7 +32,7 @@ def execute() -> None:
         """
         log.debug(f"Running COPY statement:\n{copy_stmt}")
         cursor.execute(copy_stmt)
-        log.info(f"✅ Loaded {file_name} into {settings.SCHEMA}.{table_name}")
+        log.info(f"Loaded {file_name} into {settings.SCHEMA}.{table_name}")
 
     cursor.close()
     conn.close()
