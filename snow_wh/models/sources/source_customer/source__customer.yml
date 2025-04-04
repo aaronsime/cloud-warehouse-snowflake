@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: raw
+    database: DEV_CLOUD_DATAWAREHOUSE
+    schema: RAW
+    tables:
+      - name: OLIST_CUSTOMERS
+        description: "Raw customer data ingested from upstream systems."
+        columns:
+          - name: customer_id
+            description: "ID for each customer"
+          - name: customer_unique_id
+            description: "Unique ID for each customer"
+          - name: customer_zip_code_prefix
+            description: "Customers zip code prefix"
+          - name: customer_city
+            description: "Customers city"
+          - name: customer_state
+            description: "Customers state"

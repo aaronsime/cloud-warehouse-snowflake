@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: raw
+    database: DEV_CLOUD_DATAWAREHOUSE
+    schema: RAW
+    tables:
+      - name: OLIST_ORDERS
+        description: "Raw order data ingested from upstream systems."
+        columns:
+          - name: order_id
+            description: "ID for each order"
+          - name: customer_id
+            description: "customer_id"
+          - name: order_status
+            description: "status of the order"
+          - name: order_purchase_timestamp
+            description: "datetime of order purchase"
+          - name: order_approved_at
+            description: "datetime of order approval"
+          - name: order_delivered_carrier_date
+            description: "datetime of order delivery to carrier"
+          - name: order_delivered_customer_date
+            description: "datetime of order delivery to customer"
+          - name: order_estimated_delivery_date
+            description: "datetime of estimated delivery to customer"
