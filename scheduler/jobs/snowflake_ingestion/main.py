@@ -4,6 +4,9 @@ from utils.common import load_table_mappings
 
 
 def execute() -> None:
+    """
+    Ingests data from the raw stage in Snowflake into the target tables.
+    """
     conn = get_snowflake_connection()
     cursor = conn.cursor()
 

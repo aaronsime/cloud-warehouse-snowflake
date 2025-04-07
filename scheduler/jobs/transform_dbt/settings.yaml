@@ -1,0 +1,21 @@
+schedules:
+  daily:
+    - name: refresh_dimensions
+      run_job_name: dbt-transform-job
+      region: australia-southeast1
+      environment: dev
+      config:
+        DBT_COMMAND: run
+        DBT_MODELS: tag:dim
+        DBT_TARGET: dev
+
+    - name: refresh_fact_sales
+      depends_on: refresh_dimensions
+      run_job_name: dbt-transform-job
+      region: australia-southeast1
+      environment: dev
+      config:
+        DBT_COMMAND: run
+        DBT_MODELS: tag:fact
+        DBT_TARGET: dev
+        DBT_FULL_REFRESH: true

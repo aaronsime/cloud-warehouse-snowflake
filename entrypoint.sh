@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/bash
+set -e
 
-# Exit on error, undefined variable, or failed command in pipeline
-set -euo pipefail
-
-job_name="$JOB_NAME"
-
-echo "Starting job: $job_name"
-
-# Execute main.py (should be located in project root)
-python main.py
+if [[ "$JOB_NAME" == "snowflake_ingestion" ]]; then
+  python /app/scheduler/jobs/snowflake_ingestion/main.py
+elif [[ "$JOB_NAME" == "transform_dbt" ]]; then
+  python /app/main.py  # ← your dbt runner
+else
+  echo "Unknown job: $JOB_NAME"
+  exit 1
+fi
