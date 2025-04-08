@@ -18,7 +18,7 @@ schedules:
         DBT_COMMAND: run
         DBT_MODELS: tag:int
         DBT_TARGET: dev
-        DBT_FULL_REFRESH: true
+        DBT_FULL_REFRESH: false
 
     - name: refresh_dimensions
       depends_on: refresh_intermediate
@@ -29,7 +29,7 @@ schedules:
         DBT_COMMAND: run
         DBT_MODELS: tag:dim
         DBT_TARGET: dev
-        DBT_FULL_REFRESH: true
+        DBT_FULL_REFRESH: false
 
     - name: refresh_facts
       depends_on: refresh_dimensions
@@ -40,4 +40,4 @@ schedules:
         DBT_COMMAND: run
         DBT_MODELS: tag:fact
         DBT_TARGET: dev
-        DBT_FULL_REFRESH: true
+        DBT_FULL_REFRESH: false

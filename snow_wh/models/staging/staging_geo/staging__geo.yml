@@ -7,7 +7,6 @@ models:
       alias: staging__geo
       contract:
         enforced: false
-      tags: ["staging"]
 
       columns:
         - name: location_id

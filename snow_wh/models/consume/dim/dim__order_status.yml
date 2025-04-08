@@ -7,7 +7,6 @@ models:
       alias: dim__order_status
       contract:
         enforced: false
-      tags: ["dim"]
 
       columns:
         - name: order_status_id

@@ -7,4 +7,3 @@ models:
       alias: int__fact_orders
       contract:
         enforced: false
-      tags: ["int"]

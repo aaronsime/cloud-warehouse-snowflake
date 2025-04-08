@@ -7,4 +7,3 @@ models:
       alias: fact__orders
       contract:
         enforced: false
-      tags: ["fact"]

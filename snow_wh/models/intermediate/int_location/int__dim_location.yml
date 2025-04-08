@@ -7,7 +7,6 @@ models:
       alias: int__dim_location
       contract:
         enforced: false
-      tags: ["int"]
 
       columns:
         - name: location_id

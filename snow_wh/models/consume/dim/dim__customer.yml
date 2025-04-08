@@ -7,7 +7,6 @@ models:
       alias: dim__customer
       contract:
         enforced: false
-      tags: ["dim"]
 
       columns:
         - name: customer_id

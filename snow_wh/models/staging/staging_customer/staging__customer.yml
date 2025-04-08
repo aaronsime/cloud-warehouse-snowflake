@@ -7,7 +7,6 @@ models:
       alias: staging__customer
       contract:
         enforced: false
-      tags: ["staging"]
 
       columns:
         - name: customer_id

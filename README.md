@@ -35,7 +35,6 @@ schedules:
     - name: job_name
       run_job_name: job-name-example
       region: us-central1
-      model: model_name (for dbt overrides)
 ```
 
 ### 💡 2. Cloud Function
