@@ -131,7 +131,7 @@ You're running a data pipeline where multiple dbt transformation jobs must be tr
 load .env vars for local dev
 
 Load .env var
-Get-Content ../.env | ForEach-Object {
+Get-Content .env | ForEach-Object {
   if ($_ -match "^\s*([^#][^=]+?)\s*=\s*(.*)\s*$") {
     $key, $val = $matches[1], $matches[2]
     [System.Environment]::SetEnvironmentVariable($key, $val, "Process")

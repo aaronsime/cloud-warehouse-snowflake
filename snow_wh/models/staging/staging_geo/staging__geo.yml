@@ -1,13 +1,13 @@
 version: 2
 
 models:
-  - name: int__dim_location
+  - name: staging__geo
     description: 'Contains location information'
     config:
-      alias: int__dim_location
+      alias: staging__geo
       contract:
         enforced: false
-      tags: ["dim"]
+      tags: ["staging"]
 
       columns:
         - name: location_id

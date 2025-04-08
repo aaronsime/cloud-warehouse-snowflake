@@ -7,4 +7,4 @@ models:
       alias: staging__orders
       contract:
         enforced: false
-      tags: ["fact"]
+      tags: ["staging"]

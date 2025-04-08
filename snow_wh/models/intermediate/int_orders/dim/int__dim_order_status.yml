@@ -1,13 +1,13 @@
 version: 2
 
 models:
-  - name: int__order_status
+  - name: int__dim_order_status
     description: 'Contains location information'
     config:
-      alias: int__order_status
+      alias: int__dim_order_status
       contract:
         enforced: false
-      tags: ["dim"]
+      tags: ["int"]
 
       columns:
         - name: order_status_id

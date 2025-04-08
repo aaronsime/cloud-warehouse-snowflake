@@ -1,6 +1,27 @@
 schedules:
   daily:
+    - name: refresh_staging
+      run_job_name: dbt-transform-job
+      region: australia-southeast1
+      environment: dev
+      config:
+        DBT_COMMAND: run
+        DBT_MODELS: tag:staging
+        DBT_TARGET: dev
+
+    - name: refresh_intermediate
+      depends_on: refresh_staging
+      run_job_name: dbt-transform-job
+      region: australia-southeast1
+      environment: dev
+      config:
+        DBT_COMMAND: run
+        DBT_MODELS: tag:int
+        DBT_TARGET: dev
+        DBT_FULL_REFRESH: true
+
     - name: refresh_dimensions
+      depends_on: refresh_intermediate
       run_job_name: dbt-transform-job
       region: australia-southeast1
       environment: dev
@@ -8,8 +29,9 @@ schedules:
         DBT_COMMAND: run
         DBT_MODELS: tag:dim
         DBT_TARGET: dev
+        DBT_FULL_REFRESH: true
 
-    - name: refresh_fact_sales
+    - name: refresh_facts
       depends_on: refresh_dimensions
       run_job_name: dbt-transform-job
       region: australia-southeast1

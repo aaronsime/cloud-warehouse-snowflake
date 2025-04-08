@@ -1,10 +1,10 @@
 version: 2
 
 models:
-  - name: fact__orders
+  - name: int__fact_orders
     description: 'Contains orders information'
     config:
-      alias: fact__orders
+      alias: int__fact_orders
       contract:
         enforced: false
-      tags: ["fact"]
+      tags: ["int"]

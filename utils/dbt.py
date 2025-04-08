@@ -1,6 +1,9 @@
 import subprocess
+from pathlib import Path
 
 from config.base import log
+
+DBT_PROJECT_DIR = Path(__file__).resolve().parents[1] / "snow_wh"
 
 
 def get_dbt_config_from_settings(settings: dict) -> dict:
@@ -43,5 +46,7 @@ def run_dbt(config: dict) -> None:
 
     log.info(f"Running dbt command: {' '.join(cmd)}")
 
-    subprocess.run(["dbt", "deps", "--profiles-dir", "."], check=True)
-    subprocess.run(cmd, check=True)
+    subprocess.run(
+        ["dbt", "deps", "--profiles-dir", "."], cwd=DBT_PROJECT_DIR, check=True
+    )
+    subprocess.run(cmd, cwd=DBT_PROJECT_DIR, check=True)

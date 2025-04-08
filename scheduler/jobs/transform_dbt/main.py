@@ -1,21 +1,29 @@
+import base64
+import json
+from pathlib import Path
+
 from config.base import log, os
 from utils.common import load_settings_yaml
 from utils.dbt import get_dbt_config_from_settings, run_dbt
 from utils.job_scheduler import get_jobs_for_schedule, resolve_dependencies
 
 
-def execute() -> None:
+def execute(event: dict, context: None) -> None:
     """
     Handles the orchestration of dbt models based on the provided job name/config and schedule.
     """
-    job_name = os.getenv("JOB_NAME")
-    schedule_name = os.getenv("SCHEDULE", "daily")
+    payload = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+
+    job_name = payload.get("job_name")
+    schedule_name = payload.get("schedule", os.getenv("SCHEDULE", "daily"))
 
     if not job_name:
         log.error("JOB_NAME not set")
         raise ValueError("JOB_NAME not set")
 
-    config = load_settings_yaml(path="settings.yaml")
+    settings_path = Path(__file__).parent / "settings.yaml"
+    config = load_settings_yaml(path=str(settings_path))
+
     all_jobs = get_jobs_for_schedule(config, schedule_name)
     ordered_jobs = resolve_dependencies(all_jobs, job_name)
 
@@ -27,4 +35,15 @@ def execute() -> None:
 
 
 if __name__ == "__main__":
-    execute()
+
+    """
+    TODO: Remove this block when deploying to production
+    """
+
+    message = {"job_name": "refresh_facts", "schedule": "daily"}
+
+    encoded_data = base64.b64encode(json.dumps(message).encode("utf-8")).decode("utf-8")
+
+    raw_payload = {"data": encoded_data}
+
+    execute(event=raw_payload, context=None)
