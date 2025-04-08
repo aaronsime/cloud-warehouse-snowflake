@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: staging__orders
+    description: 'Contains orders information'
+    config:
+      alias: staging__orders
+      contract:
+        enforced: false
+      tags: ["fact"]

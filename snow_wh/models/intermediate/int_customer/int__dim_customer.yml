@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: int__dim_customer
+    description: 'Contains customer information'
+    config:
+      alias: int__dim_customer
+      contract:
+        enforced: false
+      tags: ["dim"]
+
+      columns:
+        - name: customer_id
+          description: 'customers_id'
+          tests:
+            - unique
+            - not_null
+        - name: customer_unique_id
+          description: 'customer_unique_id'
+          tests:
+            - unique
+            - not_null

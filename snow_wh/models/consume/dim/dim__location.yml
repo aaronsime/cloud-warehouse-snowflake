@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: dim__location
+    description: 'Contains location information'
+    config:
+      alias: dim__location
+      contract:
+        enforced: false
+      tags: ["dim"]
+
+      columns:
+        - name: location_id
+          description: 'Unique identifier for each location'
+          tests:
+            - unique
+            - not_null
+        - name: zip_code_prefix
+          description: 'zip code for each location'
+          tests:
+            - not_null
+        - name: city
+          description: 'city for each location'
+          tests:
+            - not_null
+        - name: state
+          description: 'state for each location'
+          tests:
+            - not_null

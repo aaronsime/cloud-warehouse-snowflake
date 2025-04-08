@@ -39,9 +39,9 @@ models:
       +materialized: incremental
     consumer:
       +schema: consumer
-      +dim:
+      dim:
         +materialized: view
         +tags: [dim]
-      +fact:
+      fact:
         +materialized: view
         +tags: [fact]

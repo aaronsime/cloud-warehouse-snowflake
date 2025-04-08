@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: staging__customer
+    description: 'Contains customer information'
+    config:
+      alias: staging__customer
+      contract:
+        enforced: false
+      tags: ["dim"]
+
+      columns:
+        - name: customer_id
+          description: 'customers_id'
+          tests:
+            - unique
+            - not_null
+        - name: customer_unique_id
+          description: 'customer_unique_id'
+          tests:
+              - unique
+              - not_null
+        - name: customer_zip_code_prefix
+          description: 'customers zip code prefix'
+          tests:
+            - not_null
+        - name: customer_city
+          description: 'customer city'
+          tests:
+            - not_null
+        - name: customer_state
+          description: 'customers state'
+          tests:
+            - not_null
