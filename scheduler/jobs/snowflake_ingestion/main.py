@@ -1,6 +1,7 @@
 from config.base import log, settings
 from connectors.snowflake import get_snowflake_connection
 from utils.common import load_table_mappings
+from utils.pubsub import publish_pubsub_message
 
 
 def execute() -> None:
@@ -39,6 +40,21 @@ def execute() -> None:
 
     cursor.close()
     conn.close()
+
+    message_id = publish_pubsub_message(
+        topic=settings.PUBSUB_TOPIC,
+        message={
+            "status": "ingestion_complete",
+            "database": settings.DATABASE,
+            "schema": settings.SCHEMA,
+            "job_name": "refresh_facts",
+            "schedule": "daily",
+        },
+    )
+
+    log.info(
+        f"Published Pub/Sub message to {settings.PUBSUB_TOPIC}: message_id={message_id}"
+    )
 
 
 if __name__ == "__main__":

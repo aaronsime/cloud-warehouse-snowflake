@@ -4,9 +4,6 @@ from typing import Any, Dict, List
 def get_jobs_for_schedule(config: dict, schedule_name: str) -> list:
     """
     Retrieves jobs for a specific schedule from the configuration.
-    :param config:
-    :param schedule_name:
-    :return:
     """
     return config.get("schedules", {}).get(schedule_name, [])
 
@@ -16,9 +13,6 @@ def resolve_dependencies(
 ) -> List[Dict[str, Any]]:
     """
     Resolves job dependencies and returns an ordered list of jobs.
-    :param jobs:
-    :param target_job_name:
-    :return:
     """
     job_map = {job["name"]: job for job in jobs}
     visited = set()
