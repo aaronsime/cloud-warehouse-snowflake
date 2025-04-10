@@ -19,13 +19,17 @@ def execute() -> None:
     log.info(
         f"🧭 Switching to database: {settings.DATABASE}, schema: {settings.SCHEMA}, warehouse: {settings.WAREHOUSE}"
     )
-    cursor.execute(
-        f"""
-        USE DATABASE {settings.DATABASE};
-        USE SCHEMA {settings.SCHEMA};
-        USE WAREHOUSE {settings.WAREHOUSE};
-    """
-    )
+    cursor.execute("SELECT CURRENT_ROLE(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
+    log.info(f"🔐 Session context: {cursor.fetchone()}")
+
+    log.info(f"🧭 Switching to database: {settings.DATABASE}")
+    cursor.execute(f"USE DATABASE {settings.DATABASE}")
+
+    log.info(f"🧭 Switching to schema: {settings.SCHEMA}")
+    cursor.execute(f"USE SCHEMA {settings.SCHEMA}")
+
+    log.info(f"🧭 Switching to warehouse: {settings.WAREHOUSE}")
+    cursor.execute(f"USE WAREHOUSE {settings.WAREHOUSE}")
 
     log.info("🗂️ Loading table mappings for ingestion...")
     mappings = load_table_mappings()
