@@ -1,5 +1,6 @@
 with dim_location as (
     select
+        location_id,
         zip_code_prefix,
         city,
         state
