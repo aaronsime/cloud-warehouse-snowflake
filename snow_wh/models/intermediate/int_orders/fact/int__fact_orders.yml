@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: int__fact_orders
+    description: 'Contains orders information'
+    config:
+      alias: int__fact_orders
+      contract:
+        enforced: false

@@ -2,7 +2,7 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: 'cloud_warehouse_snowflake'
+name: 'snow_wh'
 version: '1.0.0'
 
 # This setting configures which "profile" dbt uses for this project.
@@ -31,6 +31,22 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   snow_wh:
-    # Config indicated by + and applies to all files under models/example/
-    example:
-      +materialized: view
+    staging:
+      +schema: STAGING
+      +materialized: table
+      +tags: ["staging"]
+
+    intermediate:
+      +schema: INTERMEDIATE
+      +materialized: incremental
+      +tags: ["int"]
+
+    consume:
+      +schema: CONSUME
+      dim:
+        +materialized: view
+        +tags: ["dim"]
+
+      fact:
+        +materialized: view
+        +tags: ["fact"]

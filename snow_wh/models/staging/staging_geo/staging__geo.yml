@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: staging__geo
+    description: 'Contains location information'
+    config:
+      alias: staging__geo
+      contract:
+        enforced: false
+
+      columns:
+        - name: location_id
+          description: 'Unique identifier for each location'
+          tests:
+            - unique
+            - not_null
+        - name: zip_code_prefix
+          description: 'zip code for each location'
+          tests:
+            - not_null
+        - name: city
+          description: 'city for each location'
+          tests:
+            - not_null
+        - name: state
+          description: 'state for each location'
+          tests:
+            - not_null
