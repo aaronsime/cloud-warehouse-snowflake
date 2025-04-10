@@ -26,7 +26,7 @@ def trigger_transformation_job(event: dict, context: None) -> None:
         )
         return
 
-    job_name = payload.get("job_name")
+    job_name = payload.get("cloud_job_name")
     if not job_name:
         log.error(
             "❌ 'job_name' missing in message payload. Cannot start transformation job."

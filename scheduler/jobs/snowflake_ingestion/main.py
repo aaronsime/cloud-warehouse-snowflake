@@ -69,6 +69,7 @@ def execute() -> None:
             "status": "ingestion_complete",
             "database": settings.DATABASE,
             "schema": settings.SCHEMA,
+            "cloud_job_name": "transform_dbt",
             "job_name": "refresh_facts",
             "schedule": "daily",
         },
