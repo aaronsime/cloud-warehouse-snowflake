@@ -48,7 +48,7 @@ class JobRegistry:
         with open(yaml_path) as f:
             config = yaml.load(f)
 
-        for job in config.get("schedules", {}).get("daily", []):
+        for job in config.get("schedule", {}).get("daily", []):
             job_name = job["name"]
             self.jobs_dict[job_name] = self.jobs_dict["transform_dbt"]
             log.info(f"🔗 Aliased job '{job_name}' to 'transform_dbt'")
