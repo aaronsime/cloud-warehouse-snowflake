@@ -25,13 +25,8 @@ def execute() -> None:
         log.error("❌ JOB_NAME environment variable is not set. Cannot continue.")
         raise ValueError("JOB_NAME not set")
 
-    settings_path = (
-        Path(__file__).resolve().parent.parent
-        / "scheduler"
-        / "jobs"
-        / "transform_dbt"
-        / "settings.yaml"
-    )
+    settings_path = Path(__file__).resolve().parent / "settings.yaml"
+
     log.info(f"🧩 Loading job settings from: {settings_path}")
     config = load_settings_yaml(path=str(settings_path))
 
