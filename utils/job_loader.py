@@ -20,10 +20,10 @@ class JobRegistry:
                 f"❌ Jobs folder not found: {self.jobs_path_folder}"
             )
 
-        self._load_standard_jobs()
-        self._load_transform_dbt_jobs()
+        self.load_standard_jobs()
+        self.load_transform_dbt_jobs()
 
-    def _load_standard_jobs(self) -> None:
+    def load_standard_jobs(self) -> None:
         for job_name in os.listdir(self.jobs_path_folder):
             job_dir = self.jobs_path_folder / job_name
 
@@ -39,7 +39,7 @@ class JobRegistry:
 
                 self.jobs_dict[job_name] = job_module.execute
 
-    def _load_transform_dbt_jobs(self) -> None:
+    def load_transform_dbt_jobs(self) -> None:
         yaml_path = self.jobs_path_folder / "transform_dbt" / "settings.yaml"
         if not yaml_path.exists():
             raise FileNotFoundError(f"❌ Missing settings.yaml: {yaml_path}")
