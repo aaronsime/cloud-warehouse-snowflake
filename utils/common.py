@@ -8,7 +8,14 @@ from ruamel.yaml import YAML
 def load_table_mappings() -> dict:
     """Loads table mappings from a YAML file."""
     yaml = YAML(typ="safe")
-    return yaml.load(pathlib.Path("table_mappings.yaml"))
+    file_path = (
+        pathlib.Path(__file__).resolve().parent.parent
+        / "scheduler"
+        / "jobs"
+        / "snowflake_ingestion"
+        / "table_mappings.yaml"
+    )
+    return yaml.load(file_path)
 
 
 def load_settings(path: str) -> dict[str, Any]:
