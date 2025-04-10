@@ -5,7 +5,7 @@ def get_jobs_for_schedule(config: dict, schedule_name: str) -> list:
     """
     Retrieves jobs for a specific schedule from the configuration.
     """
-    return config.get("schedules", {}).get(schedule_name, [])
+    return config.get("schedule", {}).get(schedule_name, [])
 
 
 def resolve_dependencies(
