@@ -1,4 +1,4 @@
-schedules:
+schedule:
   daily:
     - name: refresh_staging
       run_job_name: dbt-transform-job
