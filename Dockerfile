@@ -19,7 +19,7 @@ COPY . .
 
 # Optional: copy any standalone config like a YAML mapping
 COPY scheduler/jobs/snowflake_ingestion/table_mappings.yaml /app/
-COPY scheduler/jobs/transform_dbt/settings.yaml /app/
+COPY scheduler/jobs/transform_dbt/settings.yaml /app/scheduler/jobs/transform_dbt/settings.yaml
 
 # Make entrypoint script executable
 RUN chmod +x /app/entrypoint.sh
