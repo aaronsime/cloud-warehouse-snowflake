@@ -68,3 +68,21 @@ jobs:
       memory: "1GB"
       cpu: "2"
       timeout: "540s"
+
+
+  deploy_run_transform_function:
+    uses: ./.github/workflows/template-cloud-functions.yaml
+    secrets:
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
+    with:
+      function_name: "run-transform-job"
+      source_path: "functions/tune_transform"
+      entry_point: "trigger_transformation_job"
+      trigger_topic: "cloud-scheduler-transform-topic"
+      region: "us-central1"
+      project: "dev-cloud-warehouse"
+      service_account: "cloud-sa@dev-cloud-warehouse.iam.gserviceaccount.com"
+      env: dev
+      memory: "1GB"
+      cpu: "2"
+      timeout: "540s"

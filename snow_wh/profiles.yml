@@ -3,10 +3,10 @@ snow_wh:
   outputs:
     dev:
       type: snowflake
-      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-      user: "{{ env_var('SNOWFLAKE_USER') }}"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
-      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
-      database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
-      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      account: "QMUGLJO-NE36888"
+      user: "AARONSIME"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD_RUN') }}"
+      role: "DBT_ROLE"
+      database: "DEV_CLOUD_DATAWAREHOUSE"
+      warehouse: "COMPUTE_WH"
       schema: DBT_BASE
