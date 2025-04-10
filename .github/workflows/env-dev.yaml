@@ -76,7 +76,7 @@ jobs:
       gcp-credentials: ${{ secrets.GCP_CREDENTIALS_CLOUD_SA }}
     with:
       function_name: "run-transform-job"
-      source_path: "functions/tune_transform"
+      source_path: "functions/run_transform"
       entry_point: "trigger_transformation_job"
       trigger_topic: "cloud-scheduler-transform-topic"
       region: "us-central1"
