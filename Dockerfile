@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
 
 # Copy the entire project into the container
 COPY . .
+COPY scheduler/jobs/transform_dbt/settings.yaml /app/scheduler/jobs/transform_dbt/settings.yaml
 
 # Make the entrypoint script executable
 RUN chmod +x entrypoint.sh
