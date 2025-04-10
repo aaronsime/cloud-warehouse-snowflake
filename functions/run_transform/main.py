@@ -26,21 +26,19 @@ def trigger_transformation_job(event: dict, context: None) -> None:
         )
         return
 
-    job_name = payload.get("cloud_job_name")
-    if not job_name:
+    cloud_job_name = payload.get("cloud_job_name")
+    if not cloud_job_name:
         log.error(
             "❌ 'job_name' missing in message payload. Cannot start transformation job."
         )
         return
 
     log.info(
-        f"🛠 Preparing to trigger Cloud Run Job '{job_name}' in region '{settings.REGION}'..."
+        f"🛠 Preparing to trigger Cloud Run Job '{cloud_job_name}' in region '{settings.REGION}'..."
     )
 
     client = run_v2.JobsClient()
-    full_job_name = (
-        f"projects/{settings.PROJECT_ID}/locations/{settings.REGION}/jobs/{job_name}"
-    )
+    full_job_name = f"projects/{settings.PROJECT_ID}/locations/{settings.REGION}/jobs/{cloud_job_name}"
 
     overrides = {
         "container_overrides": [
@@ -50,7 +48,7 @@ def trigger_transformation_job(event: dict, context: None) -> None:
                     {"name": "PROJECT_ID", "value": settings.PROJECT_ID},
                     {"name": "DATABASE", "value": payload.get("database", "")},
                     {"name": "SCHEMA", "value": payload.get("schema", "")},
-                    {"name": "JOB_NAME", "value": job_name},
+                    {"name": "JOB_NAME", "value": payload.get("job_name", "")},
                     {"name": "SCHEDULE", "value": payload.get("schedule", "")},
                     {"name": "TRIGGER_SOURCE", "value": "post_ingestion"},
                 ]
@@ -63,11 +61,11 @@ def trigger_transformation_job(event: dict, context: None) -> None:
     try:
         response = client.run_job(request=request)
         log.info(
-            f"🚀 Successfully triggered Cloud Run Job '{job_name}' "
+            f"🚀 Successfully triggered Cloud Run Job '{cloud_job_name}' "
             f"(operation: {response.name}) with env: ENV={settings.ENVIRONMENT}, "  # type: ignore[attr-defined]
             f"DATABASE={payload.get('database')}, SCHEMA={payload.get('schema')}, "
             f"SCHEDULE={payload.get('schedule')}"
         )
 
     except Exception as e:
-        log.error(f"❌ Failed to start Cloud Run Job '{job_name}': {e}")
+        log.error(f"❌ Failed to start Cloud Run Job '{cloud_job_name}': {e}")
