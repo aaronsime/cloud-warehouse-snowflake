@@ -1,6 +1,6 @@
 # 🧱 Cloud Warehouse Snowflake
 
-![High Level Architecture](./high_level_architecture.png)
+![High Level Architecture](./visual_architecture.jpg)
 
 ## 🚀 Overview
 
