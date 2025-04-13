@@ -2,8 +2,8 @@ from pathlib import Path
 
 from config.base import log, os
 from utils.common import load_settings_yaml
-from utils.dbt import DBTRunner
-from utils.job_scheduler import get_jobs_for_schedule, resolve_dependencies
+from utils.dbt_runner import DBTRunner
+from utils.job_scheduler import DependencyResolver
 
 
 def execute() -> None:
@@ -12,6 +12,7 @@ def execute() -> None:
     Environment variables are used to get JOB_NAME and SCHEDULE.
     """
     log.info("📦 Initializing DBT job runner...")
+    resolver = DependencyResolver()
     dbt_runner = DBTRunner()
 
     job_name = os.getenv("JOB_NAME")
@@ -26,13 +27,14 @@ def execute() -> None:
         raise ValueError("JOB_NAME not set")
 
     settings_path = Path(__file__).resolve().parent / "settings.yaml"
-
+    print(f"Settings path: {settings_path}")
     log.info(f"🧩 Loading job settings from: {settings_path}")
+
     config = load_settings_yaml(path=str(settings_path))
 
     log.info(f"📅 Resolving jobs for schedule: '{schedule_name}'")
-    all_jobs = get_jobs_for_schedule(config, schedule_name)
-    ordered_jobs = resolve_dependencies(all_jobs, job_name)
+    all_jobs = resolver.get_jobs_for_schedule(config, schedule_name)
+    ordered_jobs = resolver.resolve_dependencies(all_jobs, job_name)
 
     log.info(
         f"📋 Ordered execution list resolved: {[job['name'] for job in ordered_jobs]}"
@@ -50,4 +52,8 @@ def execute() -> None:
 
 
 if __name__ == "__main__":
+
+    os.environ["JOB_NAME"] = "refresh_facts"
+    os.environ["SCHEDULE"] = "daily"
+
     execute()

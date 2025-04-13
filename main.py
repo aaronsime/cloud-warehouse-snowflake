@@ -2,7 +2,7 @@ import os
 
 from config.base import log, settings
 from utils.common import get_execution_id
-from utils.job_loader import JobRegistry
+from utils.job_registry import JobRegistry
 
 
 def main() -> None:
