@@ -4,7 +4,6 @@ from typing import Optional
 
 from pydantic_settings import BaseSettings
 
-# Set up logging
 if os.environ.get("ENVIRONMENT", "dev").lower() == "dev":
     logging.basicConfig(level=logging.DEBUG)
 else:
