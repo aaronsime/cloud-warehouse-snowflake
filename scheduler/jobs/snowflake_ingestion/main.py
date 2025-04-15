@@ -1,4 +1,5 @@
-from config.base import log, settings
+from config.base import settings
+from config.logging import configure_logging
 from connectors.snowflake import get_snowflake_connection
 from utils.common import load_table_mappings
 from utils.pubsub import publish_pubsub_message
@@ -8,6 +9,8 @@ def execute() -> None:
     """
     Ingests data from the raw stage in Snowflake into the target tables.
     """
+    log = configure_logging()
+
     log.info("📦 Establishing connection to Snowflake...")
     conn = get_snowflake_connection()
     cursor = conn.cursor()

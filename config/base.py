@@ -1,14 +1,7 @@
-import logging
 import os
 from typing import Optional
 
 from pydantic_settings import BaseSettings
-
-if os.environ.get("ENVIRONMENT", "dev").lower() == "dev":
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
-log = logging.getLogger()
 
 
 def get_settings_class(environment_name: str):  # type: ignore

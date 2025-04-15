@@ -4,7 +4,8 @@ import functions_framework
 from flask import Request
 from google.cloud import run_v2
 
-from config.base import log, settings
+from config.base import settings
+from config.logging import configure_logging
 
 
 @functions_framework.http
@@ -13,6 +14,8 @@ def run(request: Request) -> Tuple[str, int]:
     This cloud function allows users to manually trigger a Cloud Run job.
     See the README for required JSON structure.
     """
+    log = configure_logging()
+
     try:
         request_json = request.get_json(silent=False)
         log.info(f"📨 Received manual job trigger request: {request_json}")

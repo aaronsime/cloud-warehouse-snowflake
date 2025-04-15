@@ -1,14 +1,14 @@
-import os
-
-from config.base import log, settings
+from config.base import os, settings
+from config.logging import configure_logging
 from utils.common import get_execution_id
 from utils.job_registry import JobRegistry
 
 
 def main() -> None:
     """
-    Main function that will run the job specified by the JOB_NAME environment variable.
+    This is the main entry point for the job runner.
     """
+    log = configure_logging()
     registry = JobRegistry()
     job_name = os.getenv("JOB_NAME")
 

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from config.base import log, os
+from config.logging import configure_logging, os
 from utils.common import load_settings_yaml
 from utils.dbt_runner import DBTRunner
 from utils.job_scheduler import DependencyResolver
@@ -11,6 +11,8 @@ def execute() -> None:
     Handles the orchestration of dbt models based on the provided job name/config and schedule.
     Environment variables are used to get JOB_NAME and SCHEDULE.
     """
+    log = configure_logging()
+
     log.info("📦 Initializing DBT job runner...")
     resolver = DependencyResolver()
     dbt_runner = DBTRunner()
