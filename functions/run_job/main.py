@@ -5,18 +5,21 @@ from cloudevents.http.event import CloudEvent
 from functions_framework import cloud_event
 from google.cloud import run_v2
 
-from config.base import log, settings
+from config.base import settings
+from config.logging import configure_logging
 from utils.common import load_settings_yaml
 
 
 @cloud_event
 def subscribe(cloud_event: CloudEvent) -> None:
-
-    settings_yml = load_settings_yaml("settings.yaml")
     """
     Triggered by a Pub/Sub message, this function schedules one or more Cloud Run jobs
     based on the schedule specified in the incoming message.
     """
+
+    log = configure_logging()
+    settings_yml = load_settings_yaml("settings.yaml")
+
     try:
         message_str = base64.b64decode(cloud_event.data["message"]["data"]).decode(
             "utf-8"

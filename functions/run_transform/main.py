@@ -4,7 +4,8 @@ import json
 from google.cloud import run_v2
 from google.cloud.run_v2.types import RunJobRequest
 
-from config.base import log, settings
+from config.base import settings
+from config.logging import configure_logging
 
 
 def trigger_transformation_job(event: dict, context: None) -> None:
@@ -12,6 +13,8 @@ def trigger_transformation_job(event: dict, context: None) -> None:
     Triggered by a Pub/Sub message from the ingestion job.
     Starts a Cloud Run job for DBT transformation.
     """
+    log = configure_logging()
+
     try:
         message = base64.b64decode(event["data"]).decode("utf-8")
         payload = json.loads(message)
