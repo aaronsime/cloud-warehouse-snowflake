@@ -31,12 +31,12 @@ def execute() -> None:
     log.info(f"Loading job settings from: {settings_path}")
     config = load_settings_yaml(path=str(settings_path))
 
-    log.info(f"📅 Resolving jobs for schedule: '{schedule_name}'")
+    log.info(f"Resolving jobs for schedule: '{schedule_name}'")
     all_jobs = resolver.get_jobs_for_schedule(config, schedule_name)
     ordered_jobs = resolver.resolve_dependencies(all_jobs, job_name)
 
     log.info(
-        f"📋 Ordered execution list resolved: {[job['name'] for job in ordered_jobs]}"
+        f"Ordered execution list resolved: {[job['name'] for job in ordered_jobs]}"
     )
 
     for job in ordered_jobs:

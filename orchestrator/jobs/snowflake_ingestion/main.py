@@ -34,15 +34,15 @@ def execute() -> None:
     log.info(f"Switching to warehouse: {settings.WAREHOUSE}")
     cursor.execute(f"USE WAREHOUSE {settings.WAREHOUSE}")
 
-    log.info("🗂️ Loading table mappings for ingestion...")
+    log.info("Loading table mappings for ingestion...")
     mappings = load_table_mappings()
     tables = mappings.get("tables", {})
 
-    log.info(f"📄 Found {len(tables)} table(s) to ingest: {list(tables.values())}")
+    log.info(f"Found {len(tables)} table(s) to ingest: {list(tables.values())}")
 
     for file_name, table_name in tables.items():
         log.info(
-            f"⏳ Starting ingestion of file '{file_name}' into table '{settings.SCHEMA}.{table_name}'"
+            f"Starting ingestion of file '{file_name}' into table '{settings.SCHEMA}.{table_name}'"
         )
 
         copy_stmt = f"""
@@ -77,7 +77,7 @@ def execute() -> None:
     )
 
     log.info(
-        f"📨 Pub/Sub message published to topic '{settings.PUBSUB_TOPIC}' with message_id: {message_id}"
+        f"Pub/Sub message published to topic '{settings.PUBSUB_TOPIC}' with message_id: {message_id}"
     )
 
 
