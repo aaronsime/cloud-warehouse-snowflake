@@ -2,7 +2,7 @@
 
 ![High Level Architecture](./visual_architecture.jpg)
 
-## 🚀 Overview
+## Overview
 
 This project provides a modular, scalable, and cloud-native orchestration framework for managing data transformation jobs (e.g., dbt model execution) using **Google Cloud Run**, **Cloud Scheduler**, **Pub/Sub**, and **Cloud Functions**.
 
@@ -14,7 +14,7 @@ It enables:
 
 ---
 
-## 📦 Architecture
+## Architecture
 
 ```
 Cloud Scheduler
@@ -32,9 +32,9 @@ Starts Cloud Run jobs in correct execution order
 
 ---
 
-## 💠 Key Components
+## Key Components
 
-### ✅ `settings.yaml`
+### `settings.yaml`
 
 Defines jobs grouped by schedule with optional dependencies:
 
@@ -61,7 +61,7 @@ schedules:
 
 ---
 
-### 🧠 Dependency Resolver
+### Dependency Resolver
 
 Located in `utils/job_scheduler.py`, this Python-based resolver:
 - Accepts a list of jobs with optional `depends_on`
@@ -71,7 +71,7 @@ Located in `utils/job_scheduler.py`, this Python-based resolver:
 
 ---
 
-### 🐍 Cloud Run Job Runner
+### Cloud Run Job Runner
 
 Located in `scheduler/jobs/transform_dbt/main.py`, this script:
 - Loads environment variables (`JOB_NAME`, `SCHEDULE`)
@@ -81,7 +81,7 @@ Located in `scheduler/jobs/transform_dbt/main.py`, this script:
 
 ---
 
-### ☁️ GCP Orchestration Layer
+### GCP Orchestration Layer
 
 - **Cloud Scheduler**: Triggers job runs based on a cron schedule
 - **Pub/Sub**: Delivers the schedule to a Cloud Function
@@ -90,18 +90,18 @@ Located in `scheduler/jobs/transform_dbt/main.py`, this script:
 
 ---
 
-## ✅ Features
+## Features
 
-- 📄 YAML-driven job configuration
-- 🔗 Native dependency resolution (`depends_on`)
-- 🌐 GCP-native (no Airflow required)
-- 🔧 Easily extensible
-- 📦 Fully containerized with Docker
-- 🪵 Logs integrated with Cloud Logging
+- YAML-driven job configuration
+- Native dependency resolution (`depends_on`)
+- GCP-native (no Airflow required)
+- Easily extensible
+- Fully containerized with Docker
+- ogs integrated with Cloud Logging
 
 ---
 
-## 🧪 Local Development
+## Local Development
 
 ### 1. Load `.env` variables (PowerShell)
 
@@ -128,7 +128,7 @@ os.environ["SCHEDULE"] = "daily"
 ### 2. Run job locally
 
 ```bash
-python scheduler/jobs/transform_dbt/main.py
+python orchestrator/jobs/transform_dbt/main.py
 ```
 
 This will:
@@ -139,7 +139,7 @@ This will:
 
 ---
 
-## 🛠 Terraform Modules
+## Terraform Modules
 
 Includes infrastructure-as-code to provision:
 
@@ -151,7 +151,7 @@ Includes infrastructure-as-code to provision:
 
 ---
 
-## 📊 Example Use Case
+## Example Use Case
 
 You're running multiple dbt model groups daily, and some models must run only after staging completes. Instead of managing this manually or using Airflow, this project enables:
 
@@ -162,14 +162,15 @@ You're running multiple dbt model groups daily, and some models must run only af
 
 ---
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
-- 🛎 Slack alerts for job failures/success
-- 🔁 Retry policies and DLQ support
-- 🔗 Job chaining with Cloud Workflows
+- Slack alerts for job failures/success
+- Retry policies and DLQ support
+- Job chaining with Cloud Workflows
+- AI agent that will check logs and suggest changes to the dbt models
 
 ---
 
-## 👤 Author
+## Author
 
 Built by **Aaron Sime** — designed for teams looking to simplify data orchestration with clean, cloud-native tooling.

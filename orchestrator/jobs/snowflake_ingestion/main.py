@@ -11,27 +11,27 @@ def execute() -> None:
     """
     log = configure_logging()
 
-    log.info("📦 Establishing connection to Snowflake...")
+    log.info("Establishing connection to Snowflake...")
     conn = get_snowflake_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT CURRENT_ROLE(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
     session_context = cursor.fetchone()
-    log.info(f"🔐 Connected to Snowflake with session context: {session_context}")
+    log.info(f"Connected to Snowflake with session context: {session_context}")
 
     log.info(
-        f"🧭 Switching to database: {settings.DATABASE}, schema: {settings.SCHEMA}, warehouse: {settings.WAREHOUSE}"
+        f"Switching to database: {settings.DATABASE}, schema: {settings.SCHEMA}, warehouse: {settings.WAREHOUSE}"
     )
     cursor.execute("SELECT CURRENT_ROLE(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
-    log.info(f"🔐 Session context: {cursor.fetchone()}")
+    log.info(f"Session context: {cursor.fetchone()}")
 
-    log.info(f"🧭 Switching to database: {settings.DATABASE}")
+    log.info(f"Switching to database: {settings.DATABASE}")
     cursor.execute(f"USE DATABASE {settings.DATABASE}")
 
-    log.info(f"🧭 Switching to schema: {settings.SCHEMA}")
+    log.info(f"Switching to schema: {settings.SCHEMA}")
     cursor.execute(f"USE SCHEMA {settings.SCHEMA}")
 
-    log.info(f"🧭 Switching to warehouse: {settings.WAREHOUSE}")
+    log.info(f"Switching to warehouse: {settings.WAREHOUSE}")
     cursor.execute(f"USE WAREHOUSE {settings.WAREHOUSE}")
 
     log.info("🗂️ Loading table mappings for ingestion...")
@@ -52,27 +52,25 @@ def execute() -> None:
             ON_ERROR = 'CONTINUE'
         """
 
-        log.debug(
-            f"📥 Executing COPY statement for '{table_name}':\n{copy_stmt.strip()}"
-        )
+        log.debug(f"Executing COPY statement for '{table_name}':\n{copy_stmt.strip()}")
         cursor.execute(copy_stmt)
 
         log.info(
             f"✅ Successfully ingested '{file_name}' into '{settings.SCHEMA}.{table_name}'"
         )
 
-    log.info("🔒 Closing Snowflake connection...")
+    log.info("Closing Snowflake connection...")
     cursor.close()
     conn.close()
 
-    log.info("📤 Publishing Pub/Sub message to notify job completion...")
+    log.info("Publishing Pub/Sub message to notify job completion...")
     message_id = publish_pubsub_message(
         topic=settings.PUBSUB_TOPIC,
         message={
             "status": "ingestion_complete",
             "database": settings.DATABASE,
             "schema": settings.SCHEMA,
-            "cloud_job_name": "cloud-scheduler-cloudrun-job-transform-dbt",
+            "cloud_job_name": "cloud-orchestrator-cloudrun-job-transform-dbt",
             "job_name": "refresh_facts",
             "schedule": "daily",
         },

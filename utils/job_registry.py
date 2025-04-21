@@ -9,11 +9,11 @@ from config.logging import configure_logging
 
 
 class JobRegistry:
-    def __init__(self, jobs_folder: str = "scheduler.jobs") -> None:
+    def __init__(self, jobs_folder: str = "orchestrator.jobs") -> None:
         self.jobs_folder = jobs_folder
         self.jobs_dict: Dict[str, Callable[[], None]] = {}
         self.project_root = Path(__file__).resolve().parent.parent
-        self.jobs_path_folder = self.project_root / "scheduler" / "jobs"
+        self.jobs_path_folder = self.project_root / "orchestrator" / "jobs"
         self.log = configure_logging()
 
         if not self.jobs_path_folder.exists():

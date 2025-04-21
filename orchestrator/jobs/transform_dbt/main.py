@@ -13,16 +13,14 @@ def execute() -> None:
     """
     log = configure_logging()
 
-    log.info("📦 Initializing DBT job runner...")
+    log.info("Initializing DBT job runner...")
     resolver = DependencyResolver()
     dbt_runner = DBTRunner()
 
     job_name = os.getenv("JOB_NAME")
     schedule_name = os.getenv("SCHEDULE", "daily")
 
-    log.info(
-        f"📥 Environment variables - JOB_NAME: {job_name}, SCHEDULE: {schedule_name}"
-    )
+    log.info(f"Environment variables - JOB_NAME: {job_name}, SCHEDULE: {schedule_name}")
 
     if not job_name:
         log.error("❌ JOB_NAME environment variable is not set. Cannot continue.")
@@ -30,7 +28,7 @@ def execute() -> None:
 
     settings_path = Path(__file__).resolve().parent / "settings.yaml"
 
-    log.info(f"🧩 Loading job settings from: {settings_path}")
+    log.info(f"Loading job settings from: {settings_path}")
     config = load_settings_yaml(path=str(settings_path))
 
     log.info(f"📅 Resolving jobs for schedule: '{schedule_name}'")
@@ -44,7 +42,7 @@ def execute() -> None:
     for job in ordered_jobs:
         job_config = job.get("config", {})
         job_name = job.get("name", "unknown")
-        log.info(f"🚀 Starting dbt run for job: '{job_name}' with config: {job_config}")
+        log.info(f"Starting dbt run for job: '{job_name}' with config: {job_config}")
 
         dbt_config = dbt_runner.get_dbt_config_from_settings(job_config)
         dbt_runner.run_dbt(dbt_config)

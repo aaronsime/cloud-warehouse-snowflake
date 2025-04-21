@@ -24,7 +24,7 @@ def subscribe(cloud_event: CloudEvent) -> None:
         message_str = base64.b64decode(cloud_event.data["message"]["data"]).decode(
             "utf-8"
         )
-        log.info(f"📨 Received Pub/Sub message payload: {message_str}")
+        log.info(f"Received Pub/Sub message payload: {message_str}")
 
         schedule = json.loads(message_str)
         schedule_name = schedule.get("schedule")
@@ -41,7 +41,7 @@ def subscribe(cloud_event: CloudEvent) -> None:
             return
 
         log.info(
-            f"📅 Triggering {len(jobs_to_run)} job(s) for schedule: '{schedule_name}'"
+            f"Triggering {len(jobs_to_run)} job(s) for schedule: '{schedule_name}'"
         )
 
         client = run_v2.JobsClient()
@@ -51,7 +51,7 @@ def subscribe(cloud_event: CloudEvent) -> None:
             run_job_name = job.get("run_job_name", "unknown-job")
 
             log.info(
-                f"🚀 Preparing to start job: '{job_display_name}' in region: '{region}' (Cloud Run Job: '{run_job_name}')"
+                f"Preparing to start job: '{job_display_name}' in region: '{region}' (Cloud Run Job: '{run_job_name}')"
             )
 
             request = run_v2.RunJobRequest(

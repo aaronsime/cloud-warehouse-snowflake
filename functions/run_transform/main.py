@@ -64,7 +64,7 @@ def trigger_transformation_job(event: dict, context: None) -> None:
     try:
         response = client.run_job(request=request)
         log.info(
-            f"🚀 Successfully triggered Cloud Run Job '{cloud_job_name}' "
+            f"Successfully triggered Cloud Run Job '{cloud_job_name}' "
             f"(operation: {response.name}) with env: ENV={settings.ENVIRONMENT}, "  # type: ignore[attr-defined]
             f"DATABASE={payload.get('database')}, SCHEMA={payload.get('schema')}, "
             f"SCHEDULE={payload.get('schedule')}"

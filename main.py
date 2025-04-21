@@ -16,8 +16,8 @@ def main() -> None:
         raise ValueError("🚫 JOB_NAME environment variable not set")
 
     execution_id = get_execution_id()
-    log.info(f"🧠 Available jobs: {list(registry.get_jobs().keys())}")
-    log.info(f"🚀 Running job: {job_name} with execution ID: {execution_id}")
+    log.info(f"Available jobs: {list(registry.get_jobs().keys())}")
+    log.info(f"Running job: {job_name} with execution ID: {execution_id}")
 
     job_function = registry.get_job(job_name)
 
@@ -34,7 +34,7 @@ def main() -> None:
         log.info(f"✅ Job '{job_name}' completed successfully")
 
     except Exception as e:
-        log.error(f"💥 Job '{job_name}' failed with error: {e}")
+        log.error(f"❌ Job '{job_name}' failed with error: {e}")
         raise
 
 
