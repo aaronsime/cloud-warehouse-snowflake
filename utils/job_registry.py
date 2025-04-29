@@ -5,15 +5,16 @@ from typing import Callable, Dict
 
 from ruamel.yaml import YAML
 
-from config.base import log
+from config.logging import configure_logging
 
 
 class JobRegistry:
-    def __init__(self, jobs_folder: str = "scheduler.jobs") -> None:
+    def __init__(self, jobs_folder: str = "orchestrator.jobs") -> None:
         self.jobs_folder = jobs_folder
         self.jobs_dict: Dict[str, Callable[[], None]] = {}
         self.project_root = Path(__file__).resolve().parent.parent
-        self.jobs_path_folder = self.project_root / "scheduler" / "jobs"
+        self.jobs_path_folder = self.project_root / "orchestrator" / "jobs"
+        self.log = configure_logging()
 
         if not self.jobs_path_folder.exists():
             raise FileNotFoundError(
@@ -29,7 +30,7 @@ class JobRegistry:
 
             if job_dir.is_dir() and (job_dir / "main.py").exists():
                 import_path = f"{self.jobs_folder}.{job_name}.main"
-                log.info(f"📦 Importing job module: {import_path}")
+                self.log.info(f"📦 Importing job module: {import_path}")
                 job_module = importlib.import_module(import_path)
 
                 if not hasattr(job_module, "execute"):
@@ -51,7 +52,7 @@ class JobRegistry:
         for job in config.get("schedule", {}).get("daily", []):
             job_name = job["name"]
             self.jobs_dict[job_name] = self.jobs_dict["transform_dbt"]
-            log.info(f"🔗 Aliased job '{job_name}' to 'transform_dbt'")
+            self.log.info(f"🔗 Aliased job '{job_name}' to 'transform_dbt'")
 
     def get_jobs(self) -> Dict[str, Callable[[], None]]:
         return self.jobs_dict

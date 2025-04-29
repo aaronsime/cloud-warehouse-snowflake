@@ -10,7 +10,7 @@ def load_table_mappings() -> dict:
     yaml = YAML(typ="safe")
     file_path = (
         pathlib.Path(__file__).resolve().parent.parent
-        / "scheduler"
+        / "orchestrator"
         / "jobs"
         / "snowflake_ingestion"
         / "table_mappings.yaml"

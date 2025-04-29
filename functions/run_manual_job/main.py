@@ -4,7 +4,8 @@ import functions_framework
 from flask import Request
 from google.cloud import run_v2
 
-from config.base import log, settings
+from config.base import settings
+from config.logging import configure_logging
 
 
 @functions_framework.http
@@ -13,16 +14,18 @@ def run(request: Request) -> Tuple[str, int]:
     This cloud function allows users to manually trigger a Cloud Run job.
     See the README for required JSON structure.
     """
+    log = configure_logging()
+
     try:
         request_json = request.get_json(silent=False)
-        log.info(f"📨 Received manual job trigger request: {request_json}")
+        log.info(f"Received manual job trigger request: {request_json}")
 
         job_to_run = request_json["run_job_name"]
         overrides = request_json.get("overrides", {})
         region = request_json.get("region", settings.DEFAULT_REGION)
 
         log.info(
-            f"🛠️ Preparing to trigger Cloud Run job: '{job_to_run}' "
+            f"Preparing to trigger Cloud Run job: '{job_to_run}' "
             f"in region: '{region}' with overrides: {list(overrides.keys()) or 'none'}"
         )
 
@@ -39,7 +42,7 @@ def run(request: Request) -> Tuple[str, int]:
             ]
         }
 
-        log.debug(f"📦 Full container overrides: {container_overrides}")
+        log.debug(f"Full container overrides: {container_overrides}")
 
         request = run_v2.RunJobRequest(
             name=f"projects/{settings.PROJECT_ID}/locations/{region}/jobs/{job_to_run}",

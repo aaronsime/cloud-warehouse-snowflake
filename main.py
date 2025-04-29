@@ -1,14 +1,14 @@
-import os
-
-from config.base import log, settings
+from config.base import os, settings
+from config.logging import configure_logging
 from utils.common import get_execution_id
-from utils.job_loader import JobRegistry
+from utils.job_registry import JobRegistry
 
 
 def main() -> None:
     """
-    Main function that will run the job specified by the JOB_NAME environment variable.
+    This is the main entry point for the job runner.
     """
+    log = configure_logging()
     registry = JobRegistry()
     job_name = os.getenv("JOB_NAME")
 
@@ -16,8 +16,8 @@ def main() -> None:
         raise ValueError("🚫 JOB_NAME environment variable not set")
 
     execution_id = get_execution_id()
-    log.info(f"🧠 Available jobs: {list(registry.get_jobs().keys())}")
-    log.info(f"🚀 Running job: {job_name} with execution ID: {execution_id}")
+    log.info(f"Available jobs: {list(registry.get_jobs().keys())}")
+    log.info(f"Running job: {job_name} with execution ID: {execution_id}")
 
     job_function = registry.get_job(job_name)
 
@@ -34,7 +34,7 @@ def main() -> None:
         log.info(f"✅ Job '{job_name}' completed successfully")
 
     except Exception as e:
-        log.error(f"💥 Job '{job_name}' failed with error: {e}")
+        log.error(f"❌ Job '{job_name}' failed with error: {e}")
         raise
 
 
