@@ -1,143 +1,176 @@
-# Cloud Warehouse Snowflake
+# 🧱 Cloud Warehouse Snowflake
 
-## 🚀 Overview
+![High Level Architecture](./visual_architecture.jpg)
 
-This project provides a modular and scalable way to orchestrate data transformation jobs (e.g., dbt models or data ingestion tasks) using **Google Cloud Run**, **Cloud Scheduler**, **Pub/Sub**, and **Cloud Functions**.
+## Overview
 
-It allows scheduled execution of multiple Cloud Run jobs defined in a `settings.yaml` file, all managed via infrastructure-as-code (Terraform), with logs routed to Cloud Logging.
+This project provides a modular, scalable, and cloud-native orchestration framework for managing data transformation jobs (e.g., dbt model execution) using **Google Cloud Run**, **Cloud Scheduler**, **Pub/Sub**, and **Cloud Functions**.
+
+It enables:
+- Configuration-driven scheduling via `settings.yaml`
+- Dependency-aware execution (`depends_on` logic)
+- Fully containerized job processing
+- Native GCP integration (no Airflow)
 
 ---
 
-## 📦 Architecture
+## Architecture
 
 ```
 Cloud Scheduler
      ↓
 Pub/Sub (schedule topic)
      ↓
-Cloud Function (Triggered)
+Cloud Function (triggered)
      ↓
-Reads `settings.yaml`
+Reads `settings.yaml` for the given schedule
      ↓
-Starts multiple Cloud Run jobs with appropriate ENV vars (e.g., JOB_NAME)
+Resolves job dependencies
+     ↓
+Starts Cloud Run jobs in correct execution order
 ```
 
 ---
 
-## 💠 Components
+## Key Components
 
-### 📟 1. `settings.yaml`
-Defines job schedules and mappings:
+### `settings.yaml`
+
+Defines jobs grouped by schedule with optional dependencies:
 
 ```yaml
 schedules:
   daily:
-    - name: job_name
-      run_job_name: job-name-example
-      region: us-central1
-```
+    - name: refresh_staging
+      run_job_name: dbt-transform-job
+      region: australia-southeast1
+      config:
+        DBT_COMMAND: run
+        DBT_MODELS: tag:staging
+        DBT_TARGET: dev
 
-### 💡 2. Cloud Function
-Triggered by a Pub/Sub message, it:
-- Parses the `settings.yaml` file
-- Starts one or more Cloud Run jobs via the GCP Run API
-- Logs details of the run
-
-### 📼 3. Cloud Run Jobs
-Each job container runs a specific data processing task, e.g., a dbt model execution. These jobs are built from a shared codebase and defined with Docker.
-
-### ⏰ 4. Cloud Scheduler
-Triggers the Pub/Sub topic on a schedule (e.g., every 6 hours, daily, etc.).
-
----
-
-## 💡 Key Features
-
-- ✅ YAML-driven job configuration
-- ✅ Easily extendable to new jobs or schedules
-- ✅ Uses native GCP services (no Airflow dependency)
-- ✅ Logs all activity to Cloud Logging
-- ✅ Jobs are fully containerized
-
----
-
-## 💢 Local Development
-
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-2. Run Cloud Function locally:
-```bash
-functions-framework --target=subscribe
-```
-
-3. Trigger function:
-```bash
-curl -X POST http://localhost:8080/ -H "Content-Type: application/json" \
-  -d '{"message": {"data": "<base64-encoded-schedule-payload>"}}'
+    - name: refresh_facts
+      depends_on: refresh_staging
+      run_job_name: dbt-transform-job
+      region: australia-southeast1
+      config:
+        DBT_COMMAND: run
+        DBT_MODELS: tag:facts
+        DBT_TARGET: dev
 ```
 
 ---
 
-## ⚙️ Environment Variables
+### Dependency Resolver
 
-The following are expected for the function and Cloud Run jobs:
-
-| Variable         | Description                       |
-|------------------|-----------------------------------|
-| `PROJECT_ID`     | GCP project ID                    |
-| `ENV`            | Environment (e.g., dev, prod)     |
-| `REGION`         | Default region for Cloud Run jobs |
+Located in `utils/job_scheduler.py`, this Python-based resolver:
+- Accepts a list of jobs with optional `depends_on`
+- Recursively orders them via topological sort
+- Prevents re-visiting shared dependencies
+- Ensures correct execution order
 
 ---
 
-## 📜 Useful Terraform Modules
+### Cloud Run Job Runner
 
-- Cloud Run job definitions
-- IAM permissions
-- Cloud Scheduler setup
-- Cloud Function with trigger and permissions
-
----
-
-## ✨ Example Use Case
-
-You're running a data pipeline where multiple dbt transformation jobs must be triggered daily. Instead of managing them manually or using Airflow, this setup automates it using GCP native tooling and YAML configuration.
+Located in `scheduler/jobs/transform_dbt/main.py`, this script:
+- Loads environment variables (`JOB_NAME`, `SCHEDULE`)
+- Parses `settings.yaml`
+- Resolves dependencies
+- Runs dbt with mapped config
 
 ---
 
-## 🧹 Future Enhancements
+### GCP Orchestration Layer
 
-- Job failure alerting (via Slack or Error Reporting)
-- Retry policies and dead-letter queues
-- Job chaining via Cloud Workflows
+- **Cloud Scheduler**: Triggers job runs based on a cron schedule
+- **Pub/Sub**: Delivers the schedule to a Cloud Function
+- **Cloud Function**: Reads `settings.yaml`, resolves jobs, starts Cloud Run jobs
+- **Cloud Run**: Executes dbt commands inside a containerized job
 
 ---
 
-## Testing
+## Features
 
-```
-{
-    "run_job_name": "cloud-scheduler-cloudrun-job-example",
-    "region": "us-central1",
-    "overrides": {
-        "JOB_NAME": "job_example"
-    }
-}
+- YAML-driven job configuration
+- Native dependency resolution (`depends_on`)
+- GCP-native (no Airflow required)
+- Easily extensible
+- Fully containerized with Docker
+- ogs integrated with Cloud Logging
 
-load .env vars for local dev
+---
 
-Load .env var
+## Local Development
+
+### 1. Load `.env` variables (PowerShell)
+
+```powershell
 Get-Content .env | ForEach-Object {
   if ($_ -match "^\s*([^#][^=]+?)\s*=\s*(.*)\s*$") {
     $key, $val = $matches[1], $matches[2]
     [System.Environment]::SetEnvironmentVariable($key, $val, "Process")
   }
 }
+```
+
+If testing changes to transform_dbt hardcode inside `main.py`:
+
+```python
+
+os.environ["JOB_NAME"] = "refresh_facts"
+os.environ["SCHEDULE"] = "daily"
 
 ```
 
-## 🧑‍💻 Author
-Built by [Aaron] 💡
+---
+
+### 2. Run job locally
+
+```bash
+python orchestrator/jobs/transform_dbt/main.py
+```
+
+This will:
+- Load the job config from `settings.yaml`
+- Resolve all dependencies
+- Execute the ordered dbt commands
+
+
+---
+
+## Terraform Modules
+
+Includes infrastructure-as-code to provision:
+
+- Snowflake warehouse
+- Snowflake roles and privileges
+- Snowflake users
+- Snowflake database and schema
+- gcp resources are maintained here: https://github.com/aaronsime/cloud-platform-gcp-tf
+
+---
+
+## Example Use Case
+
+You're running multiple dbt model groups daily, and some models must run only after staging completes. Instead of managing this manually or using Airflow, this project enables:
+
+- Centralized config in `settings.yaml`
+- Dependency-aware execution
+- Auto-triggered via Cloud Scheduler
+- Containerized job execution via Cloud Run
+
+---
+
+## Future Enhancements
+
+- Slack alerts for job failures/success
+- Retry policies and DLQ support
+- Job chaining with Cloud Workflows
+- AI agent that will check logs and suggest changes to the dbt models
+
+---
+
+## Author
+
+Built by **Aaron Sime** — designed for teams looking to simplify data orchestration with clean, cloud-native tooling.
