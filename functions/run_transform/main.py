@@ -25,7 +25,7 @@ def trigger_transformation_job(event: dict, context: None) -> None:
 
     if payload.get("status") != "ingestion_complete":
         log.warning(
-            f"⚠️ Message ignored: expected status 'ingestion_complete', got '{payload.get('status')}'"
+            f"Message ignored: expected status 'ingestion_complete', got '{payload.get('status')}'"
         )
         return
 

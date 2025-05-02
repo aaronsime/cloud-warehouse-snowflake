@@ -1,5 +1,0 @@
-database = "DEV_CLOUD_DATAWAREHOUSE"
-gcp_bucket = "gcs://outbound-snowflake-dev/raw/incoming"
-account_name = "ne36888"
-organization_name = "qmugljo"
-warehouse = "COMPUTE_WH"
