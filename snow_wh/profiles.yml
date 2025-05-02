@@ -2,11 +2,11 @@ snow_wh:
   target: dev
   outputs:
     dev:
-      type: snowflake
-      account: "QMUGLJO-NE36888"
-      user: "AARONSIME"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD_RUN') }}"
-      role: "DBT_ROLE"
-      database: "DEV_CLOUD_DATAWAREHOUSE"
-      warehouse: "COMPUTE_WH"
-      schema: DBT_BASE
+      type: bigquery
+      method: service-account
+      project: dev-cloud-warehouse
+      dataset: dbt_base
+      threads: 4
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+      timeout_seconds: 300
+      location: us-central1

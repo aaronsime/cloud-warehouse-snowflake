@@ -1,11 +1,11 @@
 with geo as(
     select
-        "geolocation_zip_code_prefix" as zip_code_prefix,
-        "geolocation_lat" as latitude,
-        "geolocation_lng" as longitude,
-        {{ replace_accented_chars('"geolocation_city"') }} as city,
-        "geolocation_state" as state
-    from {{ source('raw', 'OLIST_GEOLOCATION') }}
+        geolocation_zip_code_prefix as zip_code_prefix,
+        geolocation_lat as latitude,
+        geolocation_lng as longitude,
+        {{ replace_accented_chars('geolocation_city') }} as city,
+        geolocation_state as state
+    from {{ source('raw', 'olist_geolocation') }}
 ),
 
 customer_location as (
@@ -22,7 +22,7 @@ union_geo as (
         city,
         state
     from geo
-    union
+    union distinct
     select
         zip_code_prefix,
         city,
@@ -30,7 +30,7 @@ union_geo as (
     from customer_location
 )
 select
-    md5(concat(zip_code_prefix, city, state)) as location_id,
+    to_hex(md5(concat(zip_code_prefix, city, state))) as location_id,
     zip_code_prefix,
     city,
     state

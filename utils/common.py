@@ -10,12 +10,11 @@ def load_table_mappings() -> dict:
     yaml = YAML(typ="safe")
     file_path = (
         pathlib.Path(__file__).resolve().parent.parent
-        / "orchestrator"
-        / "jobs"
-        / "snowflake_ingestion"
+        / "config"
         / "table_mappings.yaml"
     )
-    return yaml.load(file_path)
+    with open(file_path, "r", encoding="utf-8") as f:
+        return yaml.load(f)
 
 
 def load_settings(path: str) -> dict[str, Any]:

@@ -2,10 +2,10 @@ version: 2
 
 sources:
   - name: raw
-    database: DEV_CLOUD_DATAWAREHOUSE
-    schema: RAW
+    project: dev-cloud-warehouse
+    dataset: raw
     tables:
-      - name: OLIST_CUSTOMERS
+      - name: olist_customers
         description: "Raw customer data ingested from upstream systems."
         columns:
           - name: customer_id

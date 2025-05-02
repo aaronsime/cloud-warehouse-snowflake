@@ -112,6 +112,7 @@ Get-Content .env | ForEach-Object {
     [System.Environment]::SetEnvironmentVariable($key, $val, "Process")
   }
 }
+
 ```
 
 If testing changes to transform_dbt hardcode inside `main.py`:
@@ -121,6 +122,14 @@ If testing changes to transform_dbt hardcode inside `main.py`:
 os.environ["JOB_NAME"] = "refresh_facts"
 os.environ["SCHEDULE"] = "daily"
 
+```
+If local testing changes for cloud run or any gcp service add this to the top of the `main.py` file:
+The client will know to read the environment variables from the `.env` file.
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
 ```
 
 ---
