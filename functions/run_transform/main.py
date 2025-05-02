@@ -37,7 +37,7 @@ def trigger_transformation_job(event: dict, context: None) -> None:
         return
 
     log.info(
-        f"🛠 Preparing to trigger Cloud Run Job '{cloud_job_name}' in region '{settings.REGION}'..."
+        f"Preparing to trigger Cloud Run Job '{cloud_job_name}' in region '{settings.REGION}'..."
     )
 
     client = run_v2.JobsClient()
@@ -49,8 +49,6 @@ def trigger_transformation_job(event: dict, context: None) -> None:
                 "env": [
                     {"name": "ENV", "value": settings.ENVIRONMENT},
                     {"name": "PROJECT_ID", "value": settings.PROJECT_ID},
-                    {"name": "DATABASE", "value": payload.get("database", "")},
-                    {"name": "SCHEMA", "value": payload.get("schema", "")},
                     {"name": "JOB_NAME", "value": payload.get("job_name", "")},
                     {"name": "SCHEDULE", "value": payload.get("schedule", "")},
                     {"name": "TRIGGER_SOURCE", "value": "post_ingestion"},

@@ -2,19 +2,19 @@ version: 2
 
 sources:
   - name: raw
-    database: DEV_CLOUD_DATAWAREHOUSE
-    schema: RAW
+    project: dev-cloud-warehouse
+    dataset: raw
     tables:
-      - name: OLIST_GEOLOCATION
+      - name: olist_geolocation
         description: "Raw geolocation data."
         columns:
           - name: geolocation_zip_code_prefix
             description: "Zip code prefix"
           - name: geolocation_lat
-            description: "latitude"
+            description: "Latitude"
           - name: geolocation_lng
-            description: "longitude"
+            description: "Longitude"
           - name: geolocation_city
-            description: "ity"
+            description: "City"
           - name: geolocation_state
-            description: "state"
+            description: "State"

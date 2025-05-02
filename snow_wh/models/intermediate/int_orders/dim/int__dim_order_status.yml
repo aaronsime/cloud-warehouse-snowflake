@@ -3,18 +3,13 @@ version: 2
 models:
   - name: int__dim_order_status
     description: 'Contains location information'
-    config:
-      alias: int__dim_order_status
-      contract:
-        enforced: false
-
-      columns:
-        - name: order_status_id
-          description: 'Unique identifier for each order status'
-          tests:
-            - unique
+    columns:
+      - name: order_status_id
+        description: 'Unique identifier for each order status'
+        tests:
+          - unique
+          - not_null
+      - name: order_status
+        description: 'description of order status'
+        tests:
             - not_null
-        - name: order_status
-          description: 'description of order status'
-          tests:
-              - not_null
