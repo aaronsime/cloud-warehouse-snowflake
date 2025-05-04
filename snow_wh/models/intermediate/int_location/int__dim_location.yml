@@ -11,6 +11,7 @@ models:
       columns:
         - name: location_id
           description: 'Unique identifier for each location'
+          data_type: string
           tests:
             - unique
             - not_null

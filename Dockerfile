@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y build-essential git
 # Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install dbt-core dbt-snowflake
+    && pip install dbt-core dbt-bigquery
 
 # Copy the entire project into the container
 COPY . .

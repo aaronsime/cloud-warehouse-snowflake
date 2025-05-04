@@ -2,25 +2,25 @@ version: 2
 
 sources:
   - name: raw
-    database: DEV_CLOUD_DATAWAREHOUSE
-    schema: RAW
+    project: dev-cloud-warehouse
+    dataset: raw
     tables:
-      - name: OLIST_ORDERS
+      - name: olist_orders
         description: "Raw order data ingested from upstream systems."
         columns:
           - name: order_id
             description: "ID for each order"
           - name: customer_id
-            description: "customer_id"
+            description: "Customer ID"
           - name: order_status
-            description: "status of the order"
+            description: "Status of the order"
           - name: order_purchase_timestamp
-            description: "datetime of order purchase"
+            description: "Datetime of order purchase"
           - name: order_approved_at
-            description: "datetime of order approval"
+            description: "Datetime of order approval"
           - name: order_delivered_carrier_date
-            description: "datetime of order delivery to carrier"
+            description: "Datetime of order delivery to carrier"
           - name: order_delivered_customer_date
-            description: "datetime of order delivery to customer"
+            description: "Datetime of order delivery to customer"
           - name: order_estimated_delivery_date
-            description: "datetime of estimated delivery to customer"
+            description: "Datetime of estimated delivery to customer"

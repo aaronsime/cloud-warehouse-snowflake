@@ -1,4 +1,4 @@
-with dim_location as (
+with dim_location_cte as (
     select
         location_id,
         zip_code_prefix,
@@ -7,4 +7,4 @@ with dim_location as (
     from {{ ref('staging__geo') }}
 )
 select *
-from dim_location
+from dim_location_cte
