@@ -30,13 +30,13 @@ def subscribe(cloud_event: CloudEvent) -> None:
         schedule_name = schedule.get("schedule")
 
         if not schedule_name:
-            log.error("⚠️ No 'schedule' field provided in the message payload.")
+            log.error("No 'schedule' field provided in the message payload.")
             return
 
         jobs_to_run = settings_yml["schedules"].get(schedule_name)
         if not jobs_to_run:
             log.warning(
-                f"⚠️ No jobs found for schedule '{schedule_name}'. Check settings.yaml."
+                f"No jobs found for schedule '{schedule_name}'. Check settings.yaml."
             )
             return
 

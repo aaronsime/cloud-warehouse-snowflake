@@ -3,19 +3,8 @@ name: "Deploy Dev"
 on: workflow_dispatch
 
 jobs:
-  terraform-plan:
-    name: "Terraform Plan Dev"
-    uses: ./.github/workflows/template-terraform-plan.yaml
-    secrets:
-      tf-api-token: ${{ secrets.TF_API_TOKEN }}
-      gcp_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
-    with:
-      env: dev
-      workspace-name: dev-cloud-warehouse-snowflake
-
   build-image:
     name: "Docker Build & Push"
-    needs: terraform-plan
     uses: ./.github/workflows/template-build-docker-image.yaml
     secrets:
       gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
@@ -24,17 +13,6 @@ jobs:
       env: dev
       project_id: dev-cloud-warehouse
       repository: cloud-warehouse-snowflake-dev
-
-  terraform-apply:
-    name: "Terraform Apply Dev"
-    needs: terraform-plan
-    uses: ./.github/workflows/template-terraform-apply.yaml
-    secrets:
-      tf-api-token: ${{ secrets.TF_API_TOKEN }}
-      gcp_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
-    with:
-      env: dev
-      workspace-name: dev-cloud-warehouse-snowflake
 
   deploy_run_job_function:
     uses: ./.github/workflows/template-cloud-functions.yaml

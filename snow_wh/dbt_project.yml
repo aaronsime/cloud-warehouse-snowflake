@@ -32,21 +32,22 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   snow_wh:
     staging:
-      +schema: STAGING
+      +schema: staging
       +materialized: table
       +tags: ["staging"]
 
     intermediate:
-      +schema: INTERMEDIATE
+      +schema: intermediate
       +materialized: incremental
       +tags: ["int"]
 
     consume:
-      +schema: CONSUME
       dim:
+        +schema: consume
         +materialized: view
         +tags: ["dim"]
 
       fact:
+        +schema: consume
         +materialized: view
         +tags: ["fact"]

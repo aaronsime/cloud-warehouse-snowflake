@@ -13,7 +13,7 @@ def main() -> None:
     job_name = os.getenv("JOB_NAME")
 
     if not job_name:
-        raise ValueError("🚫 JOB_NAME environment variable not set")
+        raise ValueError("JOB_NAME environment variable not set")
 
     execution_id = get_execution_id()
     log.info(f"Available jobs: {list(registry.get_jobs().keys())}")
@@ -27,7 +27,7 @@ def main() -> None:
             project_id=settings.PROJECT_ID,
             execution_id=execution_id,
         )
-        log.info(f"🔗 Logs: {log_url}")
+        log.info(f"Logs: {log_url}")
 
         job_function()
 
