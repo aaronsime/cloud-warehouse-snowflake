@@ -5,7 +5,6 @@ on: workflow_dispatch
 jobs:
   build-image:
     name: "Docker Build & Push"
-    needs: terraform-plan
     uses: ./.github/workflows/template-build-docker-image.yaml
     secrets:
       gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
