@@ -3,10 +3,9 @@ snow_wh:
   outputs:
     dev:
       type: bigquery
-      method: service-account
+      method: oauth
       project: dev-cloud-warehouse
       dataset: dbt_base
       threads: 4
-      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
       timeout_seconds: 300
       location: us-central1
