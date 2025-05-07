@@ -24,7 +24,6 @@ def execute() -> None:
 
     if not job_name:
         log.error("❌ JOB_NAME environment variable is not set. Cannot continue.")
-        raise ValueError("JOB_NAME not set")
 
     settings_path = Path(__file__).resolve().parent / "settings.yaml"
 
@@ -33,7 +32,7 @@ def execute() -> None:
 
     log.info(f"Resolving jobs for schedule: '{schedule_name}'")
     all_jobs = resolver.get_jobs_for_schedule(config, schedule_name)
-    ordered_jobs = resolver.resolve_dependencies(all_jobs, job_name)
+    ordered_jobs = resolver.resolve_dependencies(all_jobs, str(job_name))
 
     log.info(
         f"Ordered execution list resolved: {[job['name'] for job in ordered_jobs]}"
