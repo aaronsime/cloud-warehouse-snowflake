@@ -37,8 +37,8 @@ on:
         required: true
         type: string
     secrets:
-        gcp-credentials:
-            required: true
+      gcp-credentials:
+        required: true
 
 jobs:
   deploy:
@@ -49,11 +49,27 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
+    - name: Detect Changes in Function Source
+      id: detect_changes
+      run: |
+        echo "Checking for changes in ${{ inputs.source_path }}"
+        if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^${{ inputs.source_path }}/"; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "No relevant changes detected in ${{ inputs.source_path }}."
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Exit Early if No Changes
+      if: steps.detect_changes.outputs.changed == 'false'
+      run: |
+        echo "Skipping deployment — no changes to ${{ inputs.source_path }}"
+        exit 0
+
     - name: Set Up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.12'
-
 
     - name: Prepare Cloud Function
       run: |
