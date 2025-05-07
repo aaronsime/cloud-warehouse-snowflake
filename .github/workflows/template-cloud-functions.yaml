@@ -37,8 +37,8 @@ on:
         required: true
         type: string
     secrets:
-        gcp-credentials:
-            required: true
+      gcp-credentials:
+        required: true
 
 jobs:
   deploy:
@@ -49,13 +49,30 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
+    - name: Detect Changes in Function Source, Config, or Utils
+      id: detect_changes
+      run: |
+        echo "Checking for changes in ${{ inputs.source_path }}, config/, or utils/"
+        if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E "^(${{ inputs.source_path }}/|config/|utils/)" > /dev/null; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "No relevant changes detected in ${{ inputs.source_path }}, config/, or utils/."
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Exit Early if No Changes
+      if: steps.detect_changes.outputs.changed == 'false'
+      run: |
+        echo "Skipping deployment — no changes to ${{ inputs.source_path }}"
+
     - name: Set Up Python
+      if: steps.detect_changes.outputs.changed == 'true'
       uses: actions/setup-python@v2
       with:
         python-version: '3.12'
 
-
     - name: Prepare Cloud Function
+      if: steps.detect_changes.outputs.changed == 'true'
       run: |
         mkdir -p build/${{ inputs.function_name }}
         cp -R ${{ inputs.source_path }}/* build/${{ inputs.function_name }}/
@@ -63,11 +80,13 @@ jobs:
         cp -R utils build/${{ inputs.function_name }}/
 
     - name: Zip Cloud Function
+      if: steps.detect_changes.outputs.changed == 'true'
       run: |
         cd build
         zip -r ${{ inputs.function_name }}.zip ${{ inputs.function_name }}
 
     - name: Install gcloud CLI
+      if: steps.detect_changes.outputs.changed == 'true'
       run: |
         sudo apt-get install -y apt-transport-https ca-certificates gnupg
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
@@ -75,6 +94,7 @@ jobs:
         sudo apt-get update && sudo apt-get install -y google-cloud-sdk
 
     - name: Authenticate to Google Cloud
+      if: steps.detect_changes.outputs.changed == 'true'
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.gcp-credentials }}
       run: |
@@ -83,6 +103,7 @@ jobs:
         gcloud config set project ${{ inputs.project }}
 
     - name: Deploy Cloud Function
+      if: steps.detect_changes.outputs.changed == 'true'
       run: |
         deploy_command="gcloud functions deploy ${{ inputs.function_name }} \
           --runtime python39 \
