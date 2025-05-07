@@ -49,14 +49,14 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    - name: Detect Changes in Function Source
+    - name: Detect Changes in Function Source, Config, or Utils
       id: detect_changes
       run: |
-        echo "Checking for changes in ${{ inputs.source_path }}"
-        if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^${{ inputs.source_path }}/"; then
+        echo "Checking for changes in ${{ inputs.source_path }}, config/, or utils/"
+        if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E "^(${{ inputs.source_path }}/|config/|utils/)" > /dev/null; then
           echo "changed=true" >> $GITHUB_OUTPUT
         else
-          echo "No relevant changes detected in ${{ inputs.source_path }}."
+          echo "No relevant changes detected in ${{ inputs.source_path }}, config/, or utils/."
           echo "changed=false" >> $GITHUB_OUTPUT
         fi
 
