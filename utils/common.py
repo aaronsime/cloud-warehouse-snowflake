@@ -1,6 +1,5 @@
 import os
 import pathlib
-from typing import Any
 
 from ruamel.yaml import YAML
 
@@ -15,11 +14,6 @@ def load_table_mappings() -> dict:
     )
     with open(file_path, "r", encoding="utf-8") as f:
         return yaml.load(f)
-
-
-def load_settings(path: str) -> dict[str, Any]:
-    yaml = YAML(typ="safe")
-    return yaml.load(pathlib.Path(path))
 
 
 def load_settings_yaml(path: str) -> dict:
