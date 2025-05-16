@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     PROJECT_ID: str
     GCS_BUCKET: str
     ENVIRONMENT: str
+    DEFAULT_REGION: str = "us-central1"
 
     PUBSUB_TOPIC: str = "cloud-orchestrator-transform-topic"
 
