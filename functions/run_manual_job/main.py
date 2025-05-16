@@ -50,13 +50,13 @@ def run(request: Request) -> Tuple[str, int]:
         )
 
         client.run_job(request=request)
-        log.info(f"✅ Successfully triggered job: '{job_to_run}' in region '{region}'")
+        log.info(f"Successfully triggered job: '{job_to_run}' in region '{region}'")
 
         return "OK", 200
 
     except KeyError as e:
-        log.error(f"❌ Missing required key in request: {e}")
+        log.error(f"Missing required key in request: {e}")
         return f"Missing required key: {e}", 400
     except Exception as e:
-        log.exception(f"❌ Failed to trigger job due to unexpected error: {e}")
+        log.exception(f"Failed to trigger job due to unexpected error: {e}")
         return "Internal Server Error", 500

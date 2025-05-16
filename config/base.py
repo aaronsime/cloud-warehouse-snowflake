@@ -24,11 +24,16 @@ class Settings(BaseSettings):
     GCS_BUCKET: str
     ENVIRONMENT: str
 
+    # TABLE_ERROR_SUMMARY: str
+    # DATASET_ERROR: str
+
     PUBSUB_TOPIC: str = "cloud-orchestrator-transform-topic"
 
     LOG_URL_TEMPLATE: str = (
         "https://console.cloud.google.com/run/jobs/executions/details/{region}/{execution_id}/logs?project={project_id}"
     )
+
+    # SLACK_WEBHOOK_URL: str
 
 
 settings = get_settings_class(os.environ.get("ENVIRONMENT") or "DEV")()

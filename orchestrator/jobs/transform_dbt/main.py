@@ -23,7 +23,7 @@ def execute() -> None:
     log.info(f"Environment variables - JOB_NAME: {job_name}, SCHEDULE: {schedule_name}")
 
     if not job_name:
-        log.error("❌ JOB_NAME environment variable is not set. Cannot continue.")
+        log.error("JOB_NAME environment variable is not set. Cannot continue.")
 
     settings_path = Path(__file__).resolve().parent / "settings.yaml"
 
@@ -46,8 +46,11 @@ def execute() -> None:
         dbt_config = dbt_runner.get_dbt_config_from_settings(job_config)
         dbt_runner.run_dbt(dbt_config)
 
-        log.info(f"✅ Completed dbt run for job: '{job_name}'")
+        log.info(f"Completed dbt run for job: '{job_name}'")
 
 
 if __name__ == "__main__":
+    os.environ["JOB_NAME"] = "refresh_facts"
+    os.environ["SCHEDULE"] = "daily"
+
     execute()

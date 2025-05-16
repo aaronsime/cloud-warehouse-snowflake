@@ -1,4 +1,4 @@
-# 🧱 Cloud Warehouse Snowflake
+# Cloud Warehouse Snowflake
 
 ![High Level Architecture](./visual_architecture.jpg)
 
@@ -128,8 +128,6 @@ The client will know to read the environment variables from the `.env` file.
 ```python
 from dotenv import load_dotenv
 load_dotenv()
-
-import os
 ```
 
 ---
