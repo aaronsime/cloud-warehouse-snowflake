@@ -18,9 +18,9 @@ def trigger_transformation_job(event: dict, context: None) -> None:
     try:
         message = base64.b64decode(event["data"]).decode("utf-8")
         payload = json.loads(message)
-        log.info(f"✅ Received Pub/Sub message for transformation trigger: {payload}")
+        log.info(f"Received Pub/Sub message for transformation trigger: {payload}")
     except Exception as e:
-        log.error(f"❌ Failed to decode or parse Pub/Sub message: {e}")
+        log.error(f"Failed to decode or parse Pub/Sub message: {e}")
         return
 
     if payload.get("status") != "ingestion_complete":
@@ -32,7 +32,7 @@ def trigger_transformation_job(event: dict, context: None) -> None:
     cloud_job_name = payload.get("cloud_job_name")
     if not cloud_job_name:
         log.error(
-            "❌ 'job_name' missing in message payload. Cannot start transformation job."
+            "'job_name' missing in message payload. Cannot start transformation job."
         )
         return
 
@@ -69,4 +69,4 @@ def trigger_transformation_job(event: dict, context: None) -> None:
         )
 
     except Exception as e:
-        log.error(f"❌ Failed to start Cloud Run Job '{cloud_job_name}': {e}")
+        log.error(f"Failed to start Cloud Run Job '{cloud_job_name}': {e}")
