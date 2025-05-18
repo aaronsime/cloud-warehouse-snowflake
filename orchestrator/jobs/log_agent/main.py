@@ -58,6 +58,4 @@ def pubsub_trigger() -> tuple[str, int]:
 
 
 if __name__ == "__main__":
-
-    result = pubsub_trigger()
-    print(result)
+    pubsub_trigger()
