@@ -2,74 +2,79 @@ import re
 from typing import Dict, Optional
 
 
-def parse_log_entry(log_entry: Dict) -> Dict:
+class LogParser:
     """
-    Extracts useful info from a GCP log entry.
+    Parses GCP log entries to extract useful information.
     """
-    parsed = {
-        "timestamp": log_entry.get("timestamp"),
-        "severity": log_entry.get("severity"),
-        "error_message": None,
-        "stack_trace": None,
-        "component": None,
-        "resource_name": None,
-    }
 
-    resource = log_entry.get("resource", {})
-    resource_type = resource.get("type")
-    labels = resource.get("labels", {})
+    def __init__(self, log_entry: Dict):
+        self.log_entry = log_entry
 
-    if resource_type == "cloud_function":
-        parsed["component"] = (
-            "transformation"
-            if "transform" in labels.get("function_name", "")
-            else "ingestion"
-        )
-        parsed["resource_name"] = labels.get("function_name")
+    def parse(self) -> Dict:
+        """
+        Extracts useful info from a GCP log entry.
+        """
+        parsed = {
+            "timestamp": self.log_entry.get("timestamp"),
+            "severity": self.log_entry.get("severity"),
+            "error_message": None,
+            "stack_trace": None,
+            "component": None,
+            "resource_name": None,
+        }
 
-    elif resource_type == "cloud_run_revision":
-        parsed["component"] = (
-            "transformation"
-            if "transform" in labels.get("service_name", "")
-            else "ingestion"
-        )
-        parsed["resource_name"] = labels.get("service_name")
+        resource = self.log_entry.get("resource", {})
+        resource_type = resource.get("type")
+        labels = resource.get("labels", {})
 
-    if "textPayload" in log_entry:
-        text = log_entry["textPayload"]
-        parsed["error_message"] = extract_error_message(text)
-        parsed["stack_trace"] = extract_stack_trace(text)
-    elif "jsonPayload" in log_entry:
-        json_payload = log_entry["jsonPayload"]
-        message = json_payload.get("message", "")
-        parsed["error_message"] = extract_error_message(message)
-        parsed["stack_trace"] = extract_stack_trace(message)
+        if resource_type == "cloud_function":
+            parsed["component"] = (
+                "transformation"
+                if "transform" in labels.get("function_name", "")
+                else "ingestion"
+            )
+            parsed["resource_name"] = labels.get("function_name")
 
-    return parsed
+        elif resource_type == "cloud_run_revision":
+            parsed["component"] = (
+                "transformation"
+                if "transform" in labels.get("service_name", "")
+                else "ingestion"
+            )
+            parsed["resource_name"] = labels.get("service_name")
 
+        if "textPayload" in self.log_entry:
+            text = self.log_entry["textPayload"]
+            parsed["error_message"] = self.extract_error_message(text)
+            parsed["stack_trace"] = self.extract_stack_trace(text)
+        elif "jsonPayload" in self.log_entry:
+            message = self.log_entry["jsonPayload"].get("message", "")
+            parsed["error_message"] = self.extract_error_message(message)
+            parsed["stack_trace"] = self.extract_stack_trace(message)
 
-def extract_error_message(text: str) -> Optional[str]:
-    """
-    Extracts the last line of an error (e.g., ValueError: something went wrong)
-    """
-    match = re.search(r"(?P<error>[\w.]+Error:.*)", text.strip())
-    if match:
-        return match.group("error")
-    return None
+        return parsed
 
+    @staticmethod
+    def extract_error_message(text: str) -> Optional[str]:
+        """
+        Extracts the last line of an error (e.g., ValueError: something went wrong)
+        """
+        match = re.search(r"(?P<error>[\w.]+Error:.*)", text.strip())
+        return match.group("error") if match else None
 
-def extract_stack_trace(text: str) -> Optional[str]:
-    """
-    Extracts the full stack trace from a Python traceback.
-    """
-    if "Traceback (most recent call last):" in text:
-        lines = text.strip().splitlines()
-        traceback_lines = []
-        in_traceback = False
-        for line in lines:
-            if "Traceback" in line:
-                in_traceback = True
-            if in_traceback:
-                traceback_lines.append(line)
-        return "\n".join(traceback_lines)
-    return None
+    @staticmethod
+    def extract_stack_trace(text: str) -> Optional[str]:
+        """
+        Extracts the full stack trace from a Python traceback.
+        """
+        if "Traceback (most recent call last):" in text:
+            lines = text.strip().splitlines()
+            traceback_lines = []
+            in_traceback = False
+            for line in lines:
+                if "Traceback" in line:
+                    in_traceback = True
+                if in_traceback:
+                    traceback_lines.append(line)
+            return "\n".join(traceback_lines)
+        return None

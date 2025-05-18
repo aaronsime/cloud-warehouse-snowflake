@@ -50,7 +50,7 @@ def execute() -> None:
 
 
 if __name__ == "__main__":
-    os.environ["JOB_NAME"] = "refresh_facts"
-    os.environ["SCHEDULE"] = "daily"
+    # os.environ["JOB_NAME"] = "refresh_facts"
+    # os.environ["SCHEDULE"] = "daily"
 
     execute()

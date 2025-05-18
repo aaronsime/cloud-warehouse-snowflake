@@ -23,9 +23,11 @@ class Settings(BaseSettings):
     PROJECT_ID: str
     GCS_BUCKET: str
     ENVIRONMENT: str
+    GEMINI_API_KEY: str = "AIzaSyC7vGBVhMp643J3Adzjtc8Bh8Fp8wUi-Qg"
+    GEMINI_MODEL: str = "gemini-1.5-flash"
 
-    # TABLE_ERROR_SUMMARY: str
-    # DATASET_ERROR: str
+    TABLE_ERROR_SUMMARY: str = "error_summary"
+    DATASET_ERROR: str = "error_dataset"
 
     PUBSUB_TOPIC: str = "cloud-orchestrator-transform-topic"
 
@@ -33,7 +35,9 @@ class Settings(BaseSettings):
         "https://console.cloud.google.com/run/jobs/executions/details/{region}/{execution_id}/logs?project={project_id}"
     )
 
-    # SLACK_WEBHOOK_URL: str
+    SLACK_WEBHOOK_URL: str = (
+        "https://hooks.slack.com/services/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"
+    )
 
 
 settings = get_settings_class(os.environ.get("ENVIRONMENT") or "DEV")()
