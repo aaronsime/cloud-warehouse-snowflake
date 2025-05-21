@@ -1,27 +1,22 @@
-# Use a lightweight Python base image
 FROM python:3.12-slim
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy requirements first for better layer caching
-COPY services/log_agent/requirements.txt .
-
-# Install Python dependencies
+# Copy requirements and install early to use cache
+COPY services/log_agent/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire log_agent source code into /app
+# Copy the log_agent service code
 COPY services/log_agent /app
 
-# Copy shared config (if used in your code)
+# Copy shared config from root
 COPY config /app/config
 
-# Set environment variables
+# Environment setup
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     PORT=8080
 
-# Expose Flask port
 EXPOSE 8080
 
 # Start the Flask app
