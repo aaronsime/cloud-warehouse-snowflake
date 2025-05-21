@@ -26,7 +26,7 @@ jobs:
       env: dev
       project_id: dev-cloud-warehouse
       repository: cloud-warehouse-snowflake-dev-log-agent
-      docker_context_path: services/log_agent
+      docker_context_path: .
       dockerfile_path: services/log_agent/Dockerfile
 
 
