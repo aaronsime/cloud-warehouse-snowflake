@@ -2,22 +2,15 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Copy requirements and install early to use cache
+# Install dependencies
 COPY services/log_agent/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the log_agent service code
-COPY services/log_agent /app
-
-# Copy shared config from root
+# Copy the full folder structure to preserve `services.*` imports
+COPY services /app/services
 COPY config /app/config
 
-# Environment setup
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app \
-    PORT=8080
+# Ensure Python sees /app as a package root
+ENV PYTHONPATH=/app
 
-EXPOSE 8080
-
-# Start the Flask app
-CMD ["python", "main.py"]
+CMD ["python", "services/log_agent/main.py"]
