@@ -25,9 +25,7 @@ jobs:
       env: dev
       project_id: dev-cloud-warehouse
       repository: cloud-warehouse-snowflake-dev-log-agent
-      context: .
-      file: services/log_agent/Dockerfile
-
+      docker_context_path: .services/log_agent/
 
   deploy_run_job_function:
     uses: ./.github/workflows/template-cloud-functions.yaml
