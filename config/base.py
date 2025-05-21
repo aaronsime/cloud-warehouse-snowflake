@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     PROJECT_ID: str
     GCS_BUCKET: str
     ENVIRONMENT: str
-    GEMINI_API_KEY: str = "AIzaSyC7vGBVhMp643J3Adzjtc8Bh8Fp8wUi-Qg"
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GEMINI_MODEL: str = "gemini-1.5-flash"
 
     TABLE_ERROR_SUMMARY: str = "error_summary"
