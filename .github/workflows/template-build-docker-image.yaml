@@ -18,6 +18,9 @@ on:
       docker_context_path:
         required: true
         type: string
+      dockerfile_path:
+        required: true
+        type: string
     secrets:
       gcp-credentials:
         required: true
@@ -44,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ inputs.docker_context_path }}
-          file: ${{ inputs.docker_context_path }}/Dockerfile
+          file: ${{ inputs.dockerfile_path }}
           pull: true
           push: true
           tags: |
