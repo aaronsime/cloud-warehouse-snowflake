@@ -15,6 +15,9 @@ on:
       env:
         required: true
         type: string
+      docker_context_path:
+        required: true
+        type: string
     secrets:
       gcp-credentials:
         required: true

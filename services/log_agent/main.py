@@ -3,12 +3,12 @@ import json
 
 from flask import Flask, request
 
-from clients.llm_client import GeminiClient
 from config.base import settings
 from config.logging import configure_logging
-from utils.bq_storage import BigQueryService
-from utils.log_parser import LogParser
-from utils.slack_monitoring import SlackMessenger
+from services.log_agent.clients.llm_client import GeminiClient
+from services.log_agent.utils.bq_storage import BigQueryService
+from services.log_agent.utils.log_parser import LogParser
+from services.log_agent.utils.slack_monitoring import SlackMessenger
 
 app = Flask(__name__)
 
@@ -58,4 +58,4 @@ def pubsub_trigger() -> tuple[str, int]:
 
 
 if __name__ == "__main__":
-    pubsub_trigger()
+    app.run(host="0.0.0.0", port=8080)

@@ -3,8 +3,8 @@ name: "Deploy Dev"
 on: workflow_dispatch
 
 jobs:
-  build-image:
-    name: "Docker Build & Push"
+  build-root-image:
+    name: "Build Root Docker Image"
     uses: ./.github/workflows/template-build-docker-image.yaml
     secrets:
       gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
@@ -13,6 +13,19 @@ jobs:
       env: dev
       project_id: dev-cloud-warehouse
       repository: cloud-warehouse-snowflake-dev
+      docker_context_path: .
+
+  build-log-agent-image:
+    name: "Build Log Agent Docker Image"
+    uses: ./.github/workflows/template-build-docker-image.yaml
+    secrets:
+      gcp-credentials: ${{ secrets.GCP_CREDENTIALS_DEV }}
+    with:
+      region: us-central1
+      env: dev
+      project_id: dev-cloud-warehouse
+      repository: cloud-warehouse-snowflake-dev-log-agent
+      docker_context_path: ./cloud-run-services/log-agent
 
   deploy_run_job_function:
     uses: ./.github/workflows/template-cloud-functions.yaml
