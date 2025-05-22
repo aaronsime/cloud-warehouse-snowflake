@@ -15,6 +15,12 @@ on:
       env:
         required: true
         type: string
+      docker_context_path:
+        required: true
+        type: string
+      dockerfile_path:
+        required: true
+        type: string
     secrets:
       gcp-credentials:
         required: true
@@ -40,8 +46,8 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: Dockerfile
+          context: ${{ inputs.docker_context_path }}
+          file: ${{ inputs.dockerfile_path }}
           pull: true
           push: true
           tags: |

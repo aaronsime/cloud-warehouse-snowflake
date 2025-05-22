@@ -1,0 +1,17 @@
+flask
+requests
+google-cloud-bigquery
+google-cloud-logging
+google-cloud-pubsub
+google-generativeai
+
+pydantic~=2.7.1
+pydantic-settings==2.2.1
+pandas~=2.2.2
+pandas-stubs
+db-dtypes==1.2.0
+retry==0.9.2
+types-retry
+smart-open==6.4.0
+requests~=2.31.0
+types-requests~=2.25.4

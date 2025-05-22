@@ -71,9 +71,9 @@ def subscribe(cloud_event: CloudEvent) -> None:
 
             client.run_job(request=request)
             log.info(
-                f"✅ Successfully triggered job '{job_display_name}' in region '{region}'"
+                f"Successfully triggered job '{job_display_name}' in region '{region}'"
             )
 
     except Exception as e:
-        log.exception(f"❌ Failed to process schedule trigger. Error: {e}")
+        log.exception(f"Failed to process schedule trigger. Error: {e}")
         raise

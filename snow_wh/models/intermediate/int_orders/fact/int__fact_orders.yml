@@ -3,7 +3,25 @@ version: 2
 models:
   - name: int__fact_orders
     description: 'Contains orders information'
-    config:
-      alias: int__fact_orders
-      contract:
-        enforced: false
+    columns:
+      - name: order_id
+        description: 'Unique identifier for each order'
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: 'Unique identifier for each customer'
+      - name: location_id
+        description: 'Unique identifier for each location'
+      - name: order_status_id
+        description: 'Unique identifier for each order status'
+      - name: order_purchase_timestamp
+        description: 'Date and time when the order was purchased'
+      - name: order_approved_at
+        description: 'Date and time when the order was approved'
+      - name: order_delivered_carrier_date
+        description: 'Date and time when the order was delivered to the carrier'
+      - name: order_delivered_customer_date
+        description: 'Date and time when the order was delivered to the customer'
+      - name: order_estimated_delivery_date
+        description: 'Estimated date and time the order will be delivered'

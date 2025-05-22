@@ -31,10 +31,10 @@ def main() -> None:
 
         job_function()
 
-        log.info(f"✅ Job '{job_name}' completed successfully")
+        log.info(f"Job '{job_name}' completed successfully")
 
     except Exception as e:
-        log.error(f"❌ Job '{job_name}' failed with error: {e}")
+        log.error(f"Job '{job_name}' failed with error: {e}")
         raise
 
 

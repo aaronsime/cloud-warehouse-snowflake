@@ -37,11 +37,9 @@ def execute() -> None:
             file_name, table_name = futures[future]
             try:
                 future.result()
-                log.info(f"✅ Ingested file '{file_name}' into table '{table_name}'")
+                log.info(f"Ingested file '{file_name}' into table '{table_name}'")
             except Exception as e:
-                log.error(
-                    f"❌ Failed to ingest '{file_name}' → '{table_name}': {str(e)}"
-                )
+                log.error(f"Failed to ingest '{file_name}' → '{table_name}': {str(e)}")
                 log.debug(traceback.format_exc())
 
     log.info("Publishing Pub/Sub message to notify job completion...")
