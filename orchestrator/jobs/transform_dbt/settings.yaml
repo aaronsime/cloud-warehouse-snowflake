@@ -5,7 +5,7 @@ schedule:
       region: australia-southeast1
       environment: dev
       config:
-        DBT_COMMAND: run
+        DBT_COMMAND: build
         DBT_MODELS: tag:staging
         DBT_TARGET: dev
 
@@ -15,7 +15,7 @@ schedule:
       region: australia-southeast1
       environment: dev
       config:
-        DBT_COMMAND: run
+        DBT_COMMAND: build
         DBT_MODELS: tag:int
         DBT_TARGET: dev
         DBT_FULL_REFRESH: false
@@ -26,7 +26,7 @@ schedule:
       region: australia-southeast1
       environment: dev
       config:
-        DBT_COMMAND: run
+        DBT_COMMAND: build
         DBT_MODELS: tag:dim
         DBT_TARGET: dev
         DBT_FULL_REFRESH: false
@@ -37,7 +37,7 @@ schedule:
       region: australia-southeast1
       environment: dev
       config:
-        DBT_COMMAND: run
+        DBT_COMMAND: build
         DBT_MODELS: tag:fact
         DBT_TARGET: dev
         DBT_FULL_REFRESH: false

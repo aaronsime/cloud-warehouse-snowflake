@@ -1,6 +1,8 @@
 import base64
 import json
 
+from cloudevents.http.event import CloudEvent
+from functions_framework import cloud_event
 from google.cloud import run_v2
 from google.cloud.run_v2.types import RunJobRequest
 
@@ -8,7 +10,8 @@ from config.base import settings
 from config.logging import configure_logging
 
 
-def trigger_transformation_job(event: dict, context: None) -> None:
+@cloud_event
+def trigger_transformation_job(cloud_event: CloudEvent) -> None:
     """
     Triggered by a Pub/Sub message from the ingestion job.
     Starts a Cloud Run job for DBT transformation.
@@ -16,11 +19,11 @@ def trigger_transformation_job(event: dict, context: None) -> None:
     log = configure_logging()
 
     try:
-        message = base64.b64decode(event["data"]).decode("utf-8")
+        message = base64.b64decode(cloud_event["data"]).decode("utf-8")
         payload = json.loads(message)
-        log.info(f"✅ Received Pub/Sub message for transformation trigger: {payload}")
+        log.info(f"Received Pub/Sub message for transformation trigger: {payload}")
     except Exception as e:
-        log.error(f"❌ Failed to decode or parse Pub/Sub message: {e}")
+        log.error(f"Failed to decode or parse Pub/Sub message: {e}")
         return
 
     if payload.get("status") != "ingestion_complete":
@@ -32,7 +35,7 @@ def trigger_transformation_job(event: dict, context: None) -> None:
     cloud_job_name = payload.get("cloud_job_name")
     if not cloud_job_name:
         log.error(
-            "❌ 'job_name' missing in message payload. Cannot start transformation job."
+            "'job_name' missing in message payload. Cannot start transformation job."
         )
         return
 
@@ -69,4 +72,4 @@ def trigger_transformation_job(event: dict, context: None) -> None:
         )
 
     except Exception as e:
-        log.error(f"❌ Failed to start Cloud Run Job '{cloud_job_name}': {e}")
+        log.error(f"Failed to start Cloud Run Job '{cloud_job_name}': {e}")
