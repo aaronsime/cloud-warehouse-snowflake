@@ -142,9 +142,22 @@ This will:
 - Load the job config from `settings.yaml`
 - Resolve all dependencies
 - Execute the ordered dbt commands
-
-
 ---
+
+
+### 3. Run job from GCP
+
+This needs to be updated with job details and pasted into cloud run functions testing window.
+
+```bash
+{
+    "run_job_name": "orca-scheduler-cloudrun-job-example",
+    "region": "us-central1",
+    "overrides": {
+        "JOB_NAME": "job_example"
+    }
+}
+```
 
 ## Terraform Modules
 
