@@ -194,4 +194,25 @@ def execute(event: dict, context: Any) -> str:
 
 
 if __name__ == "__main__":
-    execute(event={}, context=None)
+    # Correctly formatted example payload for local testing
+    # Replace with actual bucket and a real log file name in that bucket for testing.
+    simple_payload_content = {
+        "bucket": "dbt-logs-dev",  # Example, replace with your actual test bucket
+        "name": "logs/dbt/20250525-094844-transform-dbt.log",  # Example, replace
+        # "attributes": {"orchestrator_job_name": "test_job"} # Optional attributes
+    }
+
+    # Encode the payload for the mock event as expected by Pub/Sub triggers
+    encoded_payload = base64.b64encode(
+        json.dumps(simple_payload_content).encode("utf-8")
+    ).decode("utf-8")
+
+    mock_event: dict = {
+        "data": encoded_payload
+        # If your function expects other top-level keys in the event (like 'attributes' directly), add them here.
+        # For a GCS trigger via Pub/Sub, the GCS event details (bucket, name) are usually inside the 'data' payload.
+    }
+
+    print(f"--- Running local test for: {simple_payload_content.get('name')} ---")
+    result = execute(event=mock_event, context=None)
+    print(f"--- Local test finished. Result: {result} ---")
