@@ -1,54 +1,227 @@
-from typing import Dict
+from typing import Any, Dict, List, Optional, TypedDict  # Added TypedDict, List, Any
 
 import google.generativeai as genai
 
 from config.base import settings
 
 
+class AIResultTypedDict(TypedDict):
+    summary: str
+    role: str
+    score: int
+
+
+class AILogAttemptTypedDict(TypedDict):
+    role: str
+    summary_attempt: str
+    score: int
+
+
+def score_summary(text: str) -> int:
+    """Scores the AI-generated summary based on key criteria."""
+    score = 0
+    if "**Summary**" in text:
+        score += 1
+    if "**Probable Cause**" in text:
+        score += 1
+    if "**Suggested Fix**" in text:
+        score += 1
+    if "```" in text:
+        score += 1
+    if len(text) < 2000:
+        score += 1
+    if len(text) > 10:
+        score += 1
+    return score
+
+
 class GeminiClient:
     """
-    Client for interacting with the Gemini LLM.
+    Client for interacting with the Gemini LLM, using detailed parsed log information.
     """
 
-    def __init__(self, parsed_log: Dict) -> None:
+    def __init__(
+        self,
+        dbt_run_summary: Dict[str, Any],
+        orchestrator_context: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """
+        Initializes the client with parsed dbt run summary and optional orchestrator context.
+
+        Args:
+            dbt_run_summary (Dict): The detailed summary from DBTLogParser.
+            orchestrator_context (Optional[Dict]): The summary from OrchestratorLogParser.
+        """
         self.api_key = settings.GEMINI_API_KEY
         self.model_name = settings.GEMINI_MODEL
-        self.error_msg = parsed_log.get("error_message", "Unknown error")
-        self.stack_trace = parsed_log.get("stack_trace", "")
-        self.component = parsed_log.get("component", "unknown component")
-        self.resource = parsed_log.get("resource_name", "unknown resource")
         genai.configure(api_key=self.api_key)
 
-    def build_prompt(self) -> str:
+        self.dbt_summary: Dict[str, Any] = dbt_run_summary
+        self.orchestrator_context: Dict[str, Any] = (
+            orchestrator_context if orchestrator_context else {}
+        )
+
+    def build_prompt(self, role: str) -> str:
         """
-        Constructs a prompt for the LLM based on the parsed log.
+        Constructs a detailed prompt for the LLM based on the role and parsed log data.
         """
-        prompt = f"""
-                You are a cloud infrastructure assistant. Interpret the following log error and suggest a fix.
-                -Limit the response to 1000 characters or less. Avoid unnecessary explanation or verbose formatting.
-                -Likely errors will related to ingestion, transformation done in python and dbt.
+        persona = {
+            "engineer": "You are a senior cloud infrastructure and data engineering assistant.",
+            "data_scientist": "You are a data scientist reviewing pipeline errors for impact.",
+            "data_analyst": "You are a data analyst troubleshooting broken dashboards or missing data.",
+        }.get(role, "You are a data practitioner reviewing dbt logs for errors.")
 
-                Component: {self.component}
-                Resource: {self.resource}
-                Error Message: {self.error_msg}
+        orch_parts: List[str] = []
+        if self.orchestrator_context.get("orchestrator_job_name"):
+            orch_parts.append(
+                f"- Orchestrator Job: {self.orchestrator_context['orchestrator_job_name']}"
+            )
+        if self.orchestrator_context.get("schedule"):
+            orch_parts.append(f"- Schedule: {self.orchestrator_context['schedule']}")
+        if self.orchestrator_context.get("current_dbt_job_invoked"):
+            orch_parts.append(
+                f"- Current dbt Step (within orchestrator): {self.orchestrator_context['current_dbt_job_invoked']}"
+            )
 
-                Stack Trace:
-                {self.stack_trace}
+        dbt_command_source: Optional[str] = self.dbt_summary.get(
+            "invocation_command"
+        ) or self.orchestrator_context.get("current_dbt_command_executed")
 
-                Respond in this format:
-                1. Summary:
-                2. Probable Cause:
-                3. Suggested Fix:
-                """
+        orchestrator_str: str = (
+            "\n                ".join(orch_parts)
+            if orch_parts
+            else "No specific orchestrator job details provided."
+        )
 
-        return prompt
+        dbt_details_parts: List[str] = [
+            f"Log Parsed Timestamp: {self.dbt_summary.get('parsed_timestamp', 'N/A')}",
+            f"Component: {self.dbt_summary.get('component', 'transformation')}",
+            f"Resource/dbt Job Name: {self.dbt_summary.get('resource_name', 'unknown_dbt_job')}",
+            f"Overall Status: {self.dbt_summary.get('status', 'unknown')} ({self.dbt_summary.get('severity', 'UNKNOWN')})",
+        ]
+        if self.dbt_summary.get("dbt_version"):
+            dbt_details_parts.append(f"dbt Version: {self.dbt_summary['dbt_version']}")
 
-    def summarise_error(self) -> str:
+        target_profile: Optional[str] = self.dbt_summary.get("target_profile")
+        target_name: Optional[str] = self.dbt_summary.get("target_name")
+        if target_profile and target_name:
+            dbt_details_parts.append(f"dbt Target: {target_profile}/{target_name}")
+        elif target_name:
+            dbt_details_parts.append(f"dbt Target: {target_name}")
+
+        if dbt_command_source:
+            dbt_details_parts.append(f"dbt Invocation Command: {dbt_command_source}")
+        if self.dbt_summary.get(
+            "final_summary_stats"
+        ):  # Ensure key matches DBTLogParser output
+            dbt_details_parts.append(
+                f"Final dbt Stats Line: {self.dbt_summary['final_summary_stats']}"
+            )
+
+        failing_nodes: List[str] = self.dbt_summary.get("failing_nodes", [])
+        if failing_nodes:
+            failing_nodes_str = ", ".join(failing_nodes)
+            dbt_details_parts.append(f"Failing dbt Nodes: {failing_nodes_str}")
+
+        dbt_details_str: str = "\n                ".join(dbt_details_parts)
+
+        primary_error_msg: str = self.dbt_summary.get(
+            "primary_error_message", "No primary error message extracted."
+        )
+        detailed_error_breakdown: str = self.dbt_summary.get(
+            "full_error_details", "No detailed error breakdown available."
+        )
+        log_snippet_list: List[str] = self.dbt_summary.get(
+            "error_log_snippet", ["No relevant log snippet available."]
+        )
+        log_snippet: str = "\n                ".join(log_snippet_list)
+
+        return f"""
+            {persona}
+            Please analyze the following dbt run information and provide a precise, actionable summary for triaging an error.
+
+            **Overall Context for this Request:**
+            - The information below comes from an automated data pipeline that uses dbt for transformations.
+            - Your role is to assist an on-call engineer in quickly understanding and resolving the issue.
+            - The response **must be Slack-friendly**: under 2000 characters, use clear markdown formatting, and avoid conversational fluff.
+
+            **Orchestration Details:**
+                {orchestrator_str}
+
+            **dbt Run Execution Details:**
+                {dbt_details_str}
+
+            **Primary Error Identified:**
+                {primary_error_msg}
+
+            **Detailed Error Breakdown (from dbt log analysis):**
+            ```text
+            {detailed_error_breakdown}
+            ```
+
+            **Relevant Log Snippet Around First Error:**
+            ```text
+            {log_snippet}
+            ```
+
+            **Required Response Format (Use this exact structure):**
+            1.  **Summary**: Concisely state what failed and the most direct cause.
+            2.  **Probable Cause**: Elaborate on where the issue likely originated (e.g., specific model logic, test configuration, data issue). Mention the specific dbt node(s) if identified.
+            3.  **Suggested Fix**:
+                * Provide concrete, actionable steps for investigation and resolution.
+                * If applicable, include diagnostic SQL queries (use markdown for code blocks).
+                * Be brief but confident in your recommendations.
+
+            **Avoid:**
+            - Generic advice or over-explaining concepts.
+            - Speculating wildly if the provided logs lack sufficient evidence for a definitive cause. Stick to what the logs indicate.
         """
-        Generates a summary, root cause, and suggested fix using Gemini.
-        """
 
+    def summarise_best_role(self) -> AIResultTypedDict:
+        """
+        Generates summaries for different roles and returns the best one based on a scoring system.
+        """
         model = genai.GenerativeModel(self.model_name)
-        prompt = self.build_prompt()
-        response = model.generate_content(prompt)
-        return response.text.strip()
+        roles: List[str] = ["engineer", "data_scientist", "data_analyst"]
+        all_results_log: List[AILogAttemptTypedDict] = []
+
+        best_result_data: AIResultTypedDict = {
+            "summary": "Could not generate a satisfactory AI summary.",
+            "role": "unknown",
+            "score": -1,
+        }
+
+        for role in roles:
+            prompt = self.build_prompt(role)
+            response = model.generate_content(prompt)
+
+            summary_text_for_role: str = ""
+            if response.parts:
+                summary_text_for_role = "".join(
+                    part.text
+                    for part in response.parts
+                    if hasattr(part, "text") and part.text
+                )
+            elif hasattr(response, "text") and response.text:
+                summary_text_for_role = response.text
+            else:
+                summary_text_for_role = (
+                    f"AI response format not recognized or empty for role: {role}."
+                )
+
+            summary_text_for_role = summary_text_for_role.strip()
+            current_score_for_role: int = score_summary(summary_text_for_role)
+
+            if current_score_for_role > best_result_data["score"]:
+                best_result_data["summary"] = summary_text_for_role
+                best_result_data["role"] = role
+                best_result_data["score"] = current_score_for_role
+
+            all_results_log.append(
+                AILogAttemptTypedDict(
+                    role=role,
+                    summary_attempt=summary_text_for_role,
+                    score=current_score_for_role,
+                )
+            )
+        return best_result_data
