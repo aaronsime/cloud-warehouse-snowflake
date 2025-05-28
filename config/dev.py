@@ -6,3 +6,4 @@ class DevSettings(Settings):
     PROJECT_ID: str = "dev-cloud-warehouse"
     ENVIRONMENT: str = "dev"
     GCS_BUCKET: str = "outbound-snowflake-dev/raw/incoming"
+    GCS_LOG_BUCKET: str = "dbt-logs-dev"
