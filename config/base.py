@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     PROJECT_ID: str
     GCS_BUCKET: str
     ENVIRONMENT: str
-    GEMINI_API_KEY: str = "REDACTED"
+    GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.5-pro-preview-05-06"
     GCS_LOG_BUCKET: str
     TABLE_ERROR_SUMMARY: str = "error_summary"
