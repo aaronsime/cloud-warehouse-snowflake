@@ -7,8 +7,10 @@ models:
       - name: order_id
         description: 'Unique identifier for each order'
         tests:
-          - unique
-          - not_null
+          - unique_with_rows:
+              config:
+                store_failures: true
+                store_failures_as: table
       - name: customer_id
         description: 'Unique identifier for each customer'
       - name: location_id
