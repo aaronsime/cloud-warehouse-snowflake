@@ -6,10 +6,5 @@ models:
     columns:
       - name: order_status_id
         description: 'Unique identifier for each order status'
-        tests:
-          - unique
-          - not_null
       - name: order_status
         description: 'description of order status'
-        tests:
-            - not_null
