@@ -304,8 +304,7 @@ class DBTLogParser:
         """
         match = re.search(r"ERROR=(\d+)", line)
         if match and int(match.group(1)) > 0:
-            if self.summary["status"] != "error":
-                self.set_status("warning", 0)
+            self.set_status("error", 1)
 
     def set_status(self, status: str, exit_code: int) -> None:
         """
@@ -364,10 +363,10 @@ class DBTLogParser:
 
     def finalize(self) -> DBTLogSummaryTypedDict:
         """Finalizes the summary dictionary with aggregated information."""
-        if self.summary["status"] == "error":
-            self.summary["severity"] = "ERROR"
-        elif self.summary["status"] == "warning":
+        if self.summary["status"] == "warning":
             self.summary["severity"] = "WARNING"
+        elif self.summary["status"] == "error":
+            self.summary["severity"] = "ERROR"
 
         self.summary["failing_nodes"] = sorted(list(self._internal_failing_nodes_set))
         self.summary["primary_error_message"] = self.determine_primary_error_message()

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, TypedDict  # Added TypedDict, List, Any
+from typing import Any, Dict, List, Optional, TypedDict
 
 import google.generativeai as genai
 
@@ -111,9 +111,7 @@ class GeminiClient:
 
         if dbt_command_source:
             dbt_details_parts.append(f"dbt Invocation Command: {dbt_command_source}")
-        if self.dbt_summary.get(
-            "final_summary_stats"
-        ):  # Ensure key matches DBTLogParser output
+        if self.dbt_summary.get("final_summary_stats"):
             dbt_details_parts.append(
                 f"Final dbt Stats Line: {self.dbt_summary['final_summary_stats']}"
             )
