@@ -5,9 +5,6 @@ from google.cloud.exceptions import NotFound
 
 from config.base import settings
 
-# Removed: from config.logging import configure_logging
-# No internal logger needed if all logging is external
-
 
 class BigQueryService:
     """
@@ -16,7 +13,6 @@ class BigQueryService:
     Logging of this class's operations should be handled by the calling module (e.g., main.py).
     """
 
-    # Explicit type hints for instance variables
     client: bigquery.Client
     project_id: str
     dataset_id: str
@@ -107,7 +103,7 @@ class BigQueryService:
             ", ".join(failing_nodes_list) if failing_nodes_list else None
         )
 
-        self.dbt_final_summary_stats = parsed_log.get("final_summary_stats")
+        self.dbt_final_summary_stats = parsed_log.get("final_summary_line")
         error_log_snippet_list = parsed_log.get("error_log_snippet", [])
         self.error_log_snippet = (
             "\n".join(error_log_snippet_list) if error_log_snippet_list else None
@@ -218,3 +214,18 @@ class BigQueryService:
         for row in results:
             return row["count"] > 0
         return False
+
+    def get_unique_error_rows(self) -> List[Dict[str, Any]]:
+        """
+        Retrieves unique error rows from the BigQuery table.
+        Returns a list of dictionaries representing the unique error rows.
+        Propagates exceptions on failure.
+        """
+        query = f"""
+            SELECT
+                *
+            FROM `{self.full_table_id}`
+        """
+        query_job = self.client.query(query)
+        results = query_job.result()
+        return [dict(row) for row in results]
