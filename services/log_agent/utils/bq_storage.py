@@ -215,17 +215,55 @@ class BigQueryService:
             return row["count"] > 0
         return False
 
-    def get_unique_error_rows(self) -> List[Dict[str, Any]]:
+    def fetch_sample_failing_rows(
+        self,
+        test_node_name: str,
+        test_failure_schema: Optional[str] = None,
+    ) -> Optional[List[Dict[str, Any]]]:
         """
-        Retrieves unique error rows from the BigQuery table.
-        Returns a list of dictionaries representing the unique error rows.
-        Propagates exceptions on failure.
+        Fetches a sample of failing rows for a given dbt test node name.
+        This method now expects the caller (e.g., main.py) to handle exceptions and logging.
         """
-        query = f"""
-            SELECT
-                *
-            FROM `{self.full_table_id}`
-        """
+        if not test_node_name:
+            return None
+
+        schema_to_query = test_failure_schema
+        if not schema_to_query:
+            if (
+                hasattr(settings, "DBT_TEST_FAILURE_SCHEMA")
+                and settings.DBT_TEST_FAILURE_SCHEMA
+            ):
+                schema_to_query = str(settings.DBT_TEST_FAILURE_SCHEMA)
+            else:
+                return None
+
+        name_parts = test_node_name.split(".")
+        failure_table_name_candidate: Optional[str] = None
+        if len(name_parts) > 0:
+            potential_test_name_suffix = name_parts[-1]
+            if (
+                len(name_parts) > 1
+                and len(potential_test_name_suffix) > 8
+                and all(
+                    c in "0123456789abcdef" for c in potential_test_name_suffix[-8:]
+                )
+            ):
+                failure_table_name_candidate = name_parts[-2]
+            else:
+                failure_table_name_candidate = potential_test_name_suffix
+
+        if not failure_table_name_candidate:
+            return None
+
+        failure_table_id = (
+            f"{self.project_id}.{schema_to_query}.{failure_table_name_candidate}"
+        )
+
+        query = f"SELECT * FROM `{failure_table_id}`"
+
         query_job = self.client.query(query)
-        results = query_job.result()
-        return [dict(row) for row in results]
+        results = query_job.result(timeout=30)
+
+        rows = [dict(row.items()) for row in results]
+
+        return rows if rows else None

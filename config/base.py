@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     GCS_LOG_BUCKET: str
     TABLE_ERROR_SUMMARY: str = "error_summary"
     DATASET_ERROR: str = "error_dataset"
+    DBT_TEST_FAILURE_SCHEMA: str = "dbt_test__audit"
 
     PUBSUB_TOPIC: str = "cloud-orchestrator-transform-topic"
 
@@ -36,7 +37,7 @@ class Settings(BaseSettings):
     )
 
     SLACK_WEBHOOK_URL: str = (
-        "https://hooks.slack.com/services/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"
+        "https://hooks.slack.com/services/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"
     )
 
 
