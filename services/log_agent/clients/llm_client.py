@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, List, Optional, TypedDict
 
 import google.generativeai as genai
@@ -43,7 +44,8 @@ class GeminiClient:
     def __init__(
         self,
         dbt_run_summary: Dict[str, Any],
-        orchestrator_context: Optional[Dict[str, Any]] = None,
+        orchestrator_context: Optional[Dict[str, Any]],
+        failure_data_sample: Optional[List[Dict[str, Any]]],
     ) -> None:
         """
         Initializes the client with parsed dbt run summary and optional orchestrator context.
@@ -60,6 +62,7 @@ class GeminiClient:
         self.orchestrator_context: Dict[str, Any] = (
             orchestrator_context if orchestrator_context else {}
         )
+        self.failure_data_sample: Optional[List[Dict[str, Any]]] = failure_data_sample
 
     def build_prompt(self, role: str) -> str:
         """
@@ -134,6 +137,29 @@ class GeminiClient:
         )
         log_snippet: str = "\n                ".join(log_snippet_list)
 
+        failing_data_rows_str = (
+            "No specific failing data rows provided or applicable for this error type."
+        )
+        if self.failure_data_sample:
+            failing_data_rows_str = (
+                "Sample of Failing Data Rows (from dbt store_failures table):\n"
+            )
+
+            for i, row_dict in enumerate(self.failure_data_sample[:10]):
+                formatted_row = {
+                    k: str(v)[:75] + ("..." if len(str(v)) > 75 else "")
+                    for k, v in row_dict.items()
+                }
+                try:
+                    failing_data_rows_str += (
+                        f"Row {i + 1}: {json.dumps(formatted_row)}\n"
+                    )
+                except TypeError:
+                    failing_data_rows_str += f"Row {i + 1}: {str(formatted_row)} (JSON serialization failed)\n"
+
+            if len(self.failure_data_sample) > 10:
+                failing_data_rows_str += "  (...and potentially more rows)\n"
+
         return f"""
             {persona}
             Please analyze the following dbt run information and provide a precise, actionable summary for triaging an error.
@@ -155,6 +181,11 @@ class GeminiClient:
             **Detailed Error Breakdown (from dbt log analysis):**
             ```text
             {detailed_error_breakdown}
+            ```
+
+            **Sample of Failing Data Rows (if applicable, from dbt's store_failures table):**
+            ```text
+            {failing_data_rows_str}
             ```
 
             **Relevant Log Snippet Around First Error:**
