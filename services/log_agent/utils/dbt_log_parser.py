@@ -1,5 +1,6 @@
 import json
 import re
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, TypedDict
 
 
@@ -17,6 +18,8 @@ class FailureDetailTypedDict(TypedDict, total=False):
     raw_error_lines: List[str]
     filepath: Optional[str]
     detailed_reason: Optional[str]
+    is_uniqueness_related: bool
+    failure_storage_table: Optional[str]
 
 
 class DBTLogSummaryTypedDict(TypedDict):
@@ -78,41 +81,106 @@ class DBTLogParser:
         self._error_snippet_captured: bool = False
 
     @staticmethod
-    def extract_model_from_test_name(test_node_name: str) -> Optional[str]:
+    def extract_model_from_test_name(full_test_node_name: str) -> Optional[str]:
         """
-        Extracts the model name from a test node name.
+        Extracts a plausible model name from a dbt test node name.
+        Example:
+            'test.my_project.unique_with_rows_int__fact_orders_order_id.abc123hash'
+            should try to identify 'int__fact_orders'.
         """
-        parts = test_node_name.split("_")
-        if len(parts) > 1:
-            if "__" in parts[1]:
-                return parts[1]
-            potential_model_parts = []
-            for i, p_part in enumerate(parts):
-                if i == 0:
-                    continue
-                if p_part in [
-                    "id",
-                    "col",
-                    "column",
-                    "key",
-                    "code",
-                    "date",
-                    "time",
-                    "timestamp",
-                    "name",
-                    "desc",
-                    "type",
-                    "status",
-                    "count",
-                    "value",
-                ]:
-                    break
-                potential_model_parts.append(p_part)
-            if potential_model_parts:
-                return "_".join(potential_model_parts)
-            elif len(parts) > 1:
-                return parts[1]
-        return None
+        name_parts = full_test_node_name.split(".")
+        relevant_name_part = name_parts[-1]
+        if (
+            len(name_parts) > 1
+            and len(relevant_name_part) > 8
+            and all(c in "0123456789abcdef" for c in relevant_name_part[-8:])
+        ):
+            relevant_name_part = name_parts[-2]
+
+        prefixes_to_strip = [
+            "unique_with_rows_",
+            "unique_",
+            "not_null_",
+            "accepted_values_",
+            "relationships_",
+            "primary_key_",
+        ]
+
+        processed_name = relevant_name_part
+        for prefix in prefixes_to_strip:
+            if processed_name.startswith(prefix):
+                processed_name = processed_name[len(prefix) :]
+                break
+
+        if "__" in processed_name:
+            parts_after_prefix = processed_name.split("_")
+            model_name_segments = []
+            for part in parts_after_prefix:
+                model_name_segments.append(part)
+                if "__" in part and len(model_name_segments) > 1:
+                    next_part_index = len(model_name_segments)
+                    if next_part_index < len(parts_after_prefix):
+                        common_cols = [
+                            "id",
+                            "key",
+                            "pk",
+                            "fk",
+                            "uuid",
+                            "date",
+                            "ts",
+                            "name",
+                            "value",
+                            "code",
+                            "type",
+                            "status",
+                            "count",
+                            "desc",
+                        ]
+                        nxt = parts_after_prefix[next_part_index].lower()
+                        if (
+                            any(nxt.endswith(col) for col in common_cols)
+                            or nxt in common_cols
+                        ):
+                            break
+
+            return "_".join(model_name_segments) if model_name_segments else None
+
+        parts_after_prefix = processed_name.split("_")
+        if not parts_after_prefix:
+            return None
+
+        common_column_suffixes = [
+            "id",
+            "uuid",
+            "pk",
+            "fk",
+            "key",
+            "date",
+            "ts",
+            "time",
+            "timestamp",
+            "name",
+            "value",
+            "code",
+            "type",
+            "status",
+            "count",
+            "desc",
+            "amount",
+            "qty",
+            "ind",
+        ]
+        while len(parts_after_prefix) > 1:
+            last_part = parts_after_prefix[-1].lower()
+            if any(
+                last_part == suf or last_part.endswith(suf)
+                for suf in common_column_suffixes
+            ):
+                parts_after_prefix.pop()
+            else:
+                break
+
+        return "_".join(parts_after_prefix) if parts_after_prefix else None
 
     @staticmethod
     def clean_ansi_escapes(text: str) -> str:
@@ -134,6 +202,17 @@ class DBTLogParser:
         Helper to finalize and store the current test failure context.
         """
         if self.current_test_failure_context:
+            filepath = self.current_test_failure_context.get("filepath")
+            if filepath:
+                path_parts = filepath.replace("\\", "/").split("/")
+                if "models" in path_parts and (
+                    filepath.endswith(".yml") or filepath.endswith(".yaml")
+                ):
+                    model_filename = (
+                        path_parts[-1].replace(".yml", "").replace(".yaml", "")
+                    )
+                    self.current_test_failure_context["model_involved"] = model_filename
+
             self.summary["detailed_failure_info"].append(
                 self.current_test_failure_context
             )
@@ -224,15 +303,26 @@ class DBTLogParser:
             self.finalize_current_test_failure_context()
             self.set_status("warning", 0)
             failed_row_count = match.group(1)
-            test_node_name = match.group(2)
+            test_node_name_from_log = match.group(2)
+
+            is_uniqueness_test = (
+                test_node_name_from_log.startswith("unique_")
+                or "unique_" in test_node_name_from_log.lower()
+                or test_node_name_from_log.startswith("primary_key_")
+            )
+
             self.current_test_failure_context = FailureDetailTypedDict(
                 type="test_failure",
-                test_node_name=test_node_name,
-                model_involved=self.extract_model_from_test_name(test_node_name),
-                message_summary=f"Test '{test_node_name}' failed on {failed_row_count} record(s).",
+                test_node_name=test_node_name_from_log,
+                model_involved=self.extract_model_from_test_name(
+                    test_node_name_from_log
+                ),
+                message_summary=f"Test '{test_node_name_from_log}' failed on {failed_row_count} record(s).",
                 raw_error_lines=[line],
                 filepath=None,
                 detailed_reason=None,
+                is_uniqueness_related=is_uniqueness_test,
+                failure_storage_table=None,
             )
             self.summary["test_failures"].append(line)
             if not self._error_snippet_captured:
@@ -242,24 +332,41 @@ class DBTLogParser:
         return False
 
     def parse_test_failure_details(self, line: str) -> bool:
-        """
-        Parses detailed information about a test failure from a log line.
-        """
-        if self.current_test_failure_context and line.startswith("[error]"):
+        if self.current_test_failure_context and (
+            line.startswith("[error]")
+            or "See test failures:" in line
+            or line.strip().startswith("select * from")
+        ):
+
             self.current_test_failure_context.setdefault("raw_error_lines", []).append(
-                line
+                line.strip()
             )
+
             path_match = re.search(r"Failure in test .* \(([^)]+)\)", line)
             if path_match:
-                self.current_test_failure_context["filepath"] = path_match.group(
-                    1
-                ).replace("\\", "/")
+                filepath = path_match.group(1).replace("\\", "/")
+                self.current_test_failure_context["filepath"] = filepath
+                if "/models/" in filepath and (
+                    filepath.endswith(".yml") or filepath.endswith(".yaml")
+                ):
+                    model_yml_name = Path(filepath).stem
+                    if model_yml_name:
+                        self.current_test_failure_context["model_involved"] = (
+                            model_yml_name
+                        )
+
             reason_match = re.search(
                 r"(Got \d+ results, configured to fail if .*)", line
             )
             if reason_match:
                 self.current_test_failure_context["detailed_reason"] = (
                     reason_match.group(1)
+                )
+
+            storage_table_match = re.search(r"select \* from `([^`]+)`", line.strip())
+            if storage_table_match:
+                self.current_test_failure_context["failure_storage_table"] = (
+                    storage_table_match.group(1)
                 )
             return True
         return False

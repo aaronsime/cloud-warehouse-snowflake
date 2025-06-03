@@ -18,7 +18,7 @@ def configure_logging() -> logging.Logger:
         handlers=[logging.FileHandler(log_path), logging.StreamHandler()],
     )
 
-    # Save to env so you can access the same path later
+    # Save to env to access later
     os.environ["LOG_FILE_PATH"] = log_path
     log = logging.getLogger()
 
