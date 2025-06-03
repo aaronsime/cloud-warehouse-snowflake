@@ -85,19 +85,19 @@ class DBTLogParser:
         """
         Extracts a plausible model name from a dbt test node name.
         Example:
-            'test.my_project.unique_with_rows_int__fact_orders_order_id.abc123hash'
-            should try to identify 'int__fact_orders'.
+          'test.my_project.unique_with_rows_int__fact_orders_order_id.abc123hash'
+          should return 'int__fact_orders'.
         """
         name_parts = full_test_node_name.split(".")
-        relevant_name_part = name_parts[-1]
+        relevant = name_parts[-1]
         if (
             len(name_parts) > 1
-            and len(relevant_name_part) > 8
-            and all(c in "0123456789abcdef" for c in relevant_name_part[-8:])
+            and len(relevant) > 8
+            and all(c in "0123456789abcdef" for c in relevant[-8:])
         ):
-            relevant_name_part = name_parts[-2]
+            relevant = name_parts[-2]
 
-        prefixes_to_strip = [
+        prefixes = [
             "unique_with_rows_",
             "unique_",
             "not_null_",
@@ -105,82 +105,57 @@ class DBTLogParser:
             "relationships_",
             "primary_key_",
         ]
-
-        processed_name = relevant_name_part
-        for prefix in prefixes_to_strip:
-            if processed_name.startswith(prefix):
-                processed_name = processed_name[len(prefix) :]
+        for pfx in prefixes:
+            if relevant.startswith(pfx):
+                relevant = relevant[len(pfx) :]
                 break
 
-        if "__" in processed_name:
-            parts_after_prefix = processed_name.split("_")
-            model_name_segments = []
-            for part in parts_after_prefix:
-                model_name_segments.append(part)
-                if "__" in part and len(model_name_segments) > 1:
-                    next_part_index = len(model_name_segments)
-                    if next_part_index < len(parts_after_prefix):
-                        common_cols = [
-                            "id",
-                            "key",
-                            "pk",
-                            "fk",
-                            "uuid",
-                            "date",
-                            "ts",
-                            "name",
-                            "value",
-                            "code",
-                            "type",
-                            "status",
-                            "count",
-                            "desc",
-                        ]
-                        nxt = parts_after_prefix[next_part_index].lower()
-                        if (
-                            any(nxt.endswith(col) for col in common_cols)
-                            or nxt in common_cols
-                        ):
-                            break
+        if "__" not in relevant:
+            parts = relevant.split("_")
+            if not parts:
+                return None
 
-            return "_".join(model_name_segments) if model_name_segments else None
+            common_suffixes = {
+                "id",
+                "uuid",
+                "pk",
+                "fk",
+                "key",
+                "date",
+                "ts",
+                "time",
+                "timestamp",
+                "name",
+                "value",
+                "code",
+                "type",
+                "status",
+                "count",
+                "desc",
+                "amount",
+                "qty",
+                "ind",
+            }
+            while len(parts) > 1:
+                last = parts[-1].lower()
+                if last in common_suffixes or any(
+                    last.endswith(suf) for suf in common_suffixes
+                ):
+                    parts.pop()
+                else:
+                    break
 
-        parts_after_prefix = processed_name.split("_")
-        if not parts_after_prefix:
-            return None
+            return "_".join(parts) if parts else None
 
-        common_column_suffixes = [
-            "id",
-            "uuid",
-            "pk",
-            "fk",
-            "key",
-            "date",
-            "ts",
-            "time",
-            "timestamp",
-            "name",
-            "value",
-            "code",
-            "type",
-            "status",
-            "count",
-            "desc",
-            "amount",
-            "qty",
-            "ind",
-        ]
-        while len(parts_after_prefix) > 1:
-            last_part = parts_after_prefix[-1].lower()
-            if any(
-                last_part == suf or last_part.endswith(suf)
-                for suf in common_column_suffixes
-            ):
-                parts_after_prefix.pop()
-            else:
-                break
+        left, right = relevant.split("__", 1)
 
-        return "_".join(parts_after_prefix) if parts_after_prefix else None
+        right_tokens = right.split("_")
+        if len(right_tokens) >= 2:
+            base_right = right_tokens[0] + "_" + right_tokens[1]
+        else:
+            base_right = right_tokens[0]
+
+        return f"{left}__{base_right}"
 
     @staticmethod
     def clean_ansi_escapes(text: str) -> str:
