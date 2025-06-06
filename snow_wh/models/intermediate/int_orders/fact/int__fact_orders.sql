@@ -9,11 +9,23 @@ with customer as(
 
 geo as(
     select
-        location_id,
-        zip_code_prefix,
-        city,
-        state
-    from {{ ref('staging__geo') }}
+        geo as(
+            select
+                location_id,
+                zip_code_prefix,
+                city,
+                state
+            from (
+                select
+                    location_id,
+                    zip_code_prefix,
+                    city,
+                    state,
+                    ROW_NUMBER() OVER (PARTITION BY zip_code_prefix, city ORDER BY location_id ASC) as rn
+                from {{ ref('staging__geo') }}
+            ) ranked_geo
+            where ranked_geo.rn = 1
+        )
 ),
 
 orders as (
