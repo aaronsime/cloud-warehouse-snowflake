@@ -54,3 +54,26 @@ left join order_status os
 left join geo g
     on c.customer_zip_code_prefix = g.zip_code_prefix
     and c.customer_city = g.city
+geo as(
+    -- Deduplicate geo data to ensure one location_id per zip_code_prefix and city.
+    -- This addresses potential fanout if a customer's (zip_code_prefix, city)
+    -- matches multiple entries in the geo data.
+    -- We pick the record with the smallest location_id for a given (zip_code_prefix, city)
+    -- as a deterministic tie-breaking rule. If a business-specific timestamp or priority
+    -- column exists in staging__geo, it should be used in the ORDER BY clause instead.
+    select
+        location_id,
+        zip_code_prefix,
+        city,
+        state
+    from (
+        select
+            location_id,
+            zip_code_prefix,
+            city,
+            state,
+            ROW_NUMBER() OVER (PARTITION BY zip_code_prefix, city ORDER BY location_id ASC) as rn
+        from {{ ref('staging__geo') }}
+    ) deduped_geo
+    where deduped_geo.rn = 1
+),
