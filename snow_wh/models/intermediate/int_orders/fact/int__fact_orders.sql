@@ -54,3 +54,4 @@ left join order_status os
 left join geo g
     on c.customer_zip_code_prefix = g.zip_code_prefix
     and c.customer_city = g.city
+QUALIFY ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY order_purchase_timestamp DESC, location_id ASC) = 1
