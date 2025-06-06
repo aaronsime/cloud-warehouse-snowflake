@@ -54,3 +54,21 @@ left join order_status os
 left join geo g
     on c.customer_zip_code_prefix = g.zip_code_prefix
     and c.customer_city = g.city
+    select
+        location_id,
+        zip_code_prefix,
+        city,
+        state
+    from (
+        select
+            location_id,
+            zip_code_prefix,
+            city,
+            state,
+            -- Deduplicate based on the join keys for geo (zip_code_prefix, city).
+            -- Prefer a business-meaningful timestamp from staging__geo if available (e.g., created_at DESC, updated_at DESC) as per business rules.
+            -- Lacking that, use location_id ASC for deterministic selection to ensure a consistent location_id is chosen.
+            ROW_NUMBER() OVER (PARTITION BY zip_code_prefix, city ORDER BY location_id ASC) as rn
+        from {{ ref('staging__geo') }}
+    ) deduped_geo
+    where deduped_geo.rn = 1
