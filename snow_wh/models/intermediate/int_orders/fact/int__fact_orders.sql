@@ -14,6 +14,11 @@ geo as(
         city,
         state
     from {{ ref('staging__geo') }}
+    -- Deduplicate geographic data: The join on zip_code_prefix and city was causing fanout
+    -- as multiple locations can exist for the same zip_code_prefix/city combination.
+    -- We pick one deterministically by ordering by location_id.
+    -- This addresses the root cause of order_id duplication originating from this join.
+    qualify row_number() over (partition by zip_code_prefix, city order by location_id asc) = 1
 ),
 
 orders as (
