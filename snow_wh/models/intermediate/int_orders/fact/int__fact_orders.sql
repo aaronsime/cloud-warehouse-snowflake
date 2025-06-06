@@ -13,7 +13,19 @@ geo as(
         zip_code_prefix,
         city,
         state
+    from (
+    select
+        location_id,
+        zip_code_prefix,
+        city,
+        state,
+        ROW_NUMBER() OVER (PARTITION BY zip_code_prefix, city ORDER BY created_at DESC, location_id ASC) as rn
+    -- Note: 'created_at' is an assumed column name based on preferred timestamp ordering ('created_at DESC', 'updated_at DESC', etc.).
+    -- Please verify and replace 'created_at' with the actual timestamp column available in 'staging__geo' that indicates record recency or business validity.
+    -- If no suitable timestamp column exists in 'staging__geo', use a deterministic non-timestamp key like 'location_id ASC' for the ORDER BY clause (e.g., ORDER BY location_id ASC).
     from {{ ref('staging__geo') }}
+    )
+    where rn = 1
 ),
 
 orders as (
