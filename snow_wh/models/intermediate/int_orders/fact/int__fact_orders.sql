@@ -14,6 +14,13 @@ geo as(
         city,
         state
     from {{ ref('staging__geo') }}
+    -- Deduplication of geo data to prevent fanout:
+    -- The join to the geo table uses (zip_code_prefix, city).
+    -- If a single (zip_code_prefix, city) combination maps to multiple location_ids in staging__geo,
+    -- it will cause duplicate rows for orders associated with customers in that (zip_code_prefix, city).
+    -- We select one location_id deterministically by ordering by location_id (ASC by default)
+    -- and picking the first one. This ensures that each customer maps to at most one location.
+    qualify row_number() over (partition by zip_code_prefix, city order by location_id asc) = 1
 ),
 
 orders as (
