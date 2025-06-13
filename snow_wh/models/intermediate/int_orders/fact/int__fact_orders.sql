@@ -14,6 +14,11 @@ geo as(
         city,
         state
     from {{ ref('staging__geo') }}
+    -- Deduplicate geo data: A single zip_code_prefix and city can sometimes map to multiple location_ids.
+    -- To ensure a unique location for each customer's city and zip prefix, we select one deterministically.
+    -- Here, we pick the location with the smallest location_id as per deterministic ordering when no timestamp is available.
+    -- This resolves potential fan-out issues when joining customers to geographic locations, addressing the root cause of order_id duplication.
+    qualify row_number() over (partition by zip_code_prefix, city order by location_id asc) = 1
 ),
 
 orders as (
