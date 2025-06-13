@@ -14,6 +14,11 @@ geo as(
         city,
         state
     from {{ ref('staging__geo') }}
+    -- Deduplicate the geo data to ensure one location_id per (zip_code_prefix, city) combination.
+    -- This prevents fanout when joining customers to geographic locations if multiple geo entries exist
+    -- for the same zip_code_prefix and city.
+    -- Records are prioritized by the smallest location_id in case of multiple matches.
+    qualify row_number() over (partition by zip_code_prefix, city order by location_id asc) = 1
 ),
 
 orders as (
