@@ -14,6 +14,15 @@ geo as(
         city,
         state
     from {{ ref('staging__geo') }}
+    -- Deduplicate geographic data to prevent fanout on join.
+    -- The 'Potential Duplicate Sources' analysis indicated that geographic joins
+    -- can have multiple matches per location. This QUALIFY clause ensures that
+    -- for each combination of zip_code_prefix and city, only one record from
+    -- staging__geo is chosen. We use location_id for deterministic ordering,
+    -- selecting the record with the smallest location_id in case of ties.
+    -- This addresses the root cause of order_id duplication if multiple geo
+    -- records match a single customer's zip_code_prefix and city.
+    qualify row_number() over (partition by zip_code_prefix, city order by location_id asc) = 1
 ),
 
 orders as (
