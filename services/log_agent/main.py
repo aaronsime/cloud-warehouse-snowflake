@@ -130,8 +130,8 @@ def get_ai_summary_details(
     orchestrator_context: Dict[str, Any],
     failure_data_sample: Optional[List[Dict[str, Any]]],
 ) -> AIResultTypedDict:
-    """Gets AI summary, role, and score from GeminiClient."""
-    log.info("Initializing Gemini Client for summarization.")
+    """Gets AI summary, role, and score from ClaudeClient."""
+    log.info("Initializing Claude Client for summarization.")
     gemini_client = GeminiClient(
         dbt_run_summary=cast(Dict[str, Any], parsed_dbt_log),
         orchestrator_context=orchestrator_context,

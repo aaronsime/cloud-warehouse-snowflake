@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List, Optional, TypedDict
 
-import google.generativeai as genai
+import anthropic
 
 from config.base import settings
 
@@ -36,9 +36,9 @@ def score_summary(text: str) -> int:
     return score
 
 
-class GeminiClient:
+class ClaudeClient:
     """
-    Client for interacting with the Gemini LLM, using detailed parsed log information.
+    Client for interacting with the Claude API, using detailed parsed log information.
     """
 
     def __init__(
@@ -47,16 +47,8 @@ class GeminiClient:
         orchestrator_context: Optional[Dict[str, Any]],
         failure_data_sample: Optional[List[Dict[str, Any]]],
     ) -> None:
-        """
-        Initializes the client with parsed dbt run summary and optional orchestrator context.
-
-        Args:
-            dbt_run_summary (Dict): The detailed summary from DBTLogParser.
-            orchestrator_context (Optional[Dict]): The summary from OrchestratorLogParser.
-        """
-        self.api_key = settings.GEMINI_API_KEY
-        self.model_name = settings.GEMINI_MODEL
-        genai.configure(api_key=self.api_key)
+        self.api_key = settings.ANTHROPIC_API_KEY
+        self.model_name = settings.ANTHROPIC_MODEL
 
         self.dbt_summary: Dict[str, Any] = dbt_run_summary
         self.orchestrator_context: Dict[str, Any] = (
@@ -210,7 +202,7 @@ class GeminiClient:
         """
         Generates summaries for different roles and returns the best one based on a scoring system.
         """
-        model = genai.GenerativeModel(self.model_name)
+        client = anthropic.Anthropic(api_key=self.api_key)
         roles: List[str] = ["engineer", "data_scientist", "data_analyst"]
         all_results_log: List[AILogAttemptTypedDict] = []
 
@@ -222,23 +214,13 @@ class GeminiClient:
 
         for role in roles:
             prompt = self.build_prompt(role)
-            response = model.generate_content(prompt)
+            response = client.messages.create(
+                model=self.model_name,
+                max_tokens=1024,
+                messages=[{"role": "user", "content": prompt}],
+            )
 
-            summary_text_for_role: str = ""
-            if response.parts:
-                summary_text_for_role = "".join(
-                    part.text
-                    for part in response.parts
-                    if hasattr(part, "text") and part.text
-                )
-            elif hasattr(response, "text") and response.text:
-                summary_text_for_role = response.text
-            else:
-                summary_text_for_role = (
-                    f"AI response format not recognized or empty for role: {role}."
-                )
-
-            summary_text_for_role = summary_text_for_role.strip()
+            summary_text_for_role: str = response.content[0].text.strip()
             current_score_for_role: int = score_summary(summary_text_for_role)
 
             if current_score_for_role > best_result_data["score"]:
@@ -254,3 +236,7 @@ class GeminiClient:
                 )
             )
         return best_result_data
+
+
+# Backward-compatible alias
+GeminiClient = ClaudeClient

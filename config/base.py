@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     PROJECT_ID: str
     GCS_BUCKET: str
     ENVIRONMENT: str
-    GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-2.5-pro-preview-05-06"
+    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_MODEL: str = "claude-sonnet-4-6"
     GCS_LOG_BUCKET: str
     TABLE_ERROR_SUMMARY: str = "error_summary"
     DATASET_ERROR: str = "error_dataset"
@@ -36,9 +36,7 @@ class Settings(BaseSettings):
         "https://console.cloud.google.com/run/jobs/executions/details/{region}/{execution_id}/logs?project={project_id}"
     )
 
-    SLACK_WEBHOOK_URL: str = (
-        "https://REDACTED"
-    )
+    SLACK_WEBHOOK_URL: str
 
 
 settings = get_settings_class(os.environ.get("ENVIRONMENT") or "DEV")()
